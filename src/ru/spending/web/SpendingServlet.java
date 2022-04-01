@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +34,8 @@ public class SpendingServlet extends HttpServlet {
         if (action == null) {
             String startDate = request.getParameter("start_date");
             Map<PaymentType, List<Payment>> allSorted = storage.getAllSorted();
-//            allSorted = storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()),
-//                    java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
+
+//            storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()), java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
             int maxSize = maxSize(allSorted);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
@@ -50,7 +51,7 @@ public class SpendingServlet extends HttpServlet {
                 response.sendRedirect("spending");
                 return;
             case "create":
-                p = new Payment("new", DateUtil.NOW);
+                p = new Payment("new", LocalDate.now());
                 break;
             case "view":
                 p = storage.get(uuid);
@@ -98,26 +99,19 @@ public class SpendingServlet extends HttpServlet {
                 }
                 break;
             case "edit":
-                try {
-                    String uuid = request.getParameter("uuid");
-                    PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
-                    int prise = Integer.parseInt(request.getParameter("prise"));
-                    String description = request.getParameter("description");
-                    Date date = DateUtil.FORMATTER.parse(request.getParameter("date"));
-                    if (uuid.equals("new")) {
-                        storage.save(new Payment(paymentType, prise, description, date, "1"));
-                    } else {
-                        storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
-                    }
-                } catch (NullPointerException exc) {
-                } catch (NumberFormatException exc) {
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                String uuid = request.getParameter("uuid");
+                PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
+                int prise = Integer.parseInt(request.getParameter("prise"));
+                String description = request.getParameter("description");
+                LocalDate date = LocalDate.parse(request.getParameter("date"));
+                if (uuid.equals("new")) {
+                    storage.save(new Payment(paymentType, prise, description, date, "1"));
+                } else {
+                    storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
                 }
                 break;
             case "start_date_change":
                 DateUtil.customStartDatePeriod = request.getParameter("start_date");
-                System.out.println(12312);
                 break;
         }
         response.sendRedirect("spending");

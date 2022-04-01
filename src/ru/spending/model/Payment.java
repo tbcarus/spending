@@ -2,6 +2,7 @@ package ru.spending.model;
 
 import ru.spending.util.DateUtil;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,19 +12,19 @@ public class Payment {
     private PaymentType type;
     private int prise;
     private String description;
-    private Date date;
+    private LocalDate date;
     private String userID;
 
     public Payment() {
 
     }
 
-    public Payment(Date date) {
+    public Payment(LocalDate date) {
         this.date = date;
         this.id = UUID.randomUUID().toString();
     }
 
-    public Payment(String id, Date date) {
+    public Payment(String id, LocalDate date) {
         this.id = id;
         this.date = date;
     }
@@ -33,10 +34,10 @@ public class Payment {
     }
 
     public Payment(PaymentType type, int prise, String description) {
-        this(type, prise, description, new Date(), "1");
+        this(type, prise, description, LocalDate.now(), "1");
     }
 
-    public Payment(String id, PaymentType type, int prise, String description, Date date, String userID) {
+    public Payment(String id, PaymentType type, int prise, String description, LocalDate date, String userID) {
         this.id = id;
         this.type = type;
         this.prise = prise;
@@ -45,7 +46,7 @@ public class Payment {
         this.userID = userID;
     }
 
-    public Payment(PaymentType type, int prise, String description, Date date, String userID) {
+    public Payment(PaymentType type, int prise, String description, LocalDate date, String userID) {
         this(UUID.randomUUID().toString(), type, prise, description, date, userID);
     }
 
@@ -65,7 +66,7 @@ public class Payment {
         return description;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

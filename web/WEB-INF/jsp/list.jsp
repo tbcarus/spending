@@ -109,9 +109,7 @@
         <input type="text" name="qwer" value="${DateUtil.endDatePeriodStr()}">
         <BR>
         <input type="date" name="start_date" value="${DateUtil.startDatePeriodStr()}">
-        <button type="submit">Изменить период</button>
-        <br>
-        <input type="text" value="${DateUtil.FORMATTER.format(DateUtil.cal.getTime())}">
+
     </form>
 </section>
 </body>

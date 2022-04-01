@@ -9,6 +9,7 @@ import ru.spending.util.DateUtil;
 
 import java.sql.*;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ public class SqlStorage implements Storage {
             ps.setString(2, p.getType().name());
             ps.setInt(3, p.getPrise());
             ps.setString(4, p.getDescription() == null ? "" : p.getDescription());
-            ps.setDate(5, java.sql.Date.valueOf(DateUtil.FORMATTER.format(p.getDate())));
+            ps.setDate(5, java.sql.Date.valueOf(p.getDate()));
             ps.setString(6, p.getUserID() == null ? "1" : p.getUserID());
             ps.execute();
 
@@ -146,7 +147,7 @@ public class SqlStorage implements Storage {
     @Override
     public Map<PaymentType, Integer> getSumMapByType() {
         Map<PaymentType, Integer> map = new HashMap<>();
-        for(PaymentType pt : PaymentType.values()) {
+        for (PaymentType pt : PaymentType.values()) {
             map.put(pt, getSumType(pt));
         }
         return map;
@@ -161,17 +162,14 @@ public class SqlStorage implements Storage {
         });
     }
 
+    //Восстановление экземпляра класса Payment по данным из БД
     private Payment restorePayment(ResultSet rs) throws SQLException {
         String paymentID = rs.getString("id").trim();
         PaymentType paymentType = PaymentType.valueOf(rs.getString("type"));
         int prise = rs.getInt("prise");
         String description = rs.getString("description");
-        Date date = null;
-        try {
-            date = DateUtil.FORMATTER.parse(rs.getString("date"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        LocalDate date = null;
+        date = LocalDate.parse(rs.getString("date"));
         String userID = rs.getString("user_id").trim();
         return new Payment(paymentID, paymentType, prise, description, date, userID);
     }

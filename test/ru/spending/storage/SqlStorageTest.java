@@ -9,6 +9,7 @@ import ru.spending.model.PaymentType;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +22,11 @@ public class SqlStorageTest {
 
     private static final String ID = "111222333";
     private static final String ID_NEW = "12345";
-    private static final Payment PAYMENT1 = new Payment(ID, PaymentType.GAS, 2500, "", DateUtil.dateOnly(new Date()), "1");
-    private static final Payment PAYMENT2 = new Payment(PaymentType.GAS, 3000, "", new Date(122, 1, 2), "1");
-    private static final Payment PAYMENT3 = new Payment(PaymentType.CLOTH, 5124, "", new Date(122, 2, 3), "1");
-    private static final Payment PAYMENT4 = new Payment(PaymentType.DINNER, 290, "", new Date(122, 0, 24), "1");
-    private static final Payment PAYMENT_NEW = new Payment(ID_NEW, PaymentType.GAS, 2800, "", DateUtil.dateOnly(new Date()), "1");
+    private static final Payment PAYMENT1 = new Payment(ID, PaymentType.GAS, 2500, "", LocalDate.now(), "1");
+    private static final Payment PAYMENT2 = new Payment(PaymentType.GAS, 3000, "", LocalDate.of(2022, 1, 2), "1");
+    private static final Payment PAYMENT3 = new Payment(PaymentType.CLOTH, 5124, "", LocalDate.of(2022, 2, 3), "1");
+    private static final Payment PAYMENT4 = new Payment(PaymentType.DINNER, 290, "", LocalDate.of(2022, 0, 24), "1");
+    private static final Payment PAYMENT_NEW = new Payment(ID_NEW, PaymentType.GAS, 2800, "", LocalDate.now(), "1");
 
 
     @Before
@@ -61,7 +62,7 @@ public class SqlStorageTest {
     @Test
     public void update() {
         storage.save(PAYMENT_NEW);
-        Payment paymentUpdated = new Payment(ID_NEW, PaymentType.CHILDREN, 5800, "Кроссовки", DateUtil.dateOnly(new Date()), "2");
+        Payment paymentUpdated = new Payment(ID_NEW, PaymentType.CHILDREN, 5800, "Кроссовки", LocalDate.now(), "2");
         storage.update(paymentUpdated);
         assertGet(paymentUpdated);
     }
