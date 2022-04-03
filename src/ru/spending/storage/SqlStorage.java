@@ -63,8 +63,18 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Payment p) {
-        delete(p.getId());
-        save(p);
+        sqlHelper.execute("UPDATE costs SET type=?, prise=?, description=?, date=?, user_id=? WHERE id=?", ps -> {
+            ps.setString(1, p.getType().name());
+            ps.setInt(2, p.getPrise());
+            ps.setString(3, p.getDescription());
+            ps.setDate(4, java.sql.Date.valueOf(p.getDate()));
+            ps.setString(5, p.getUserID());
+            ps.setString(6, p.getId());
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException("Запись " + p.getId() + " не найдена");
+            }
+            return null;
+        });
     }
 
     @Override
