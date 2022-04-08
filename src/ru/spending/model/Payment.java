@@ -20,8 +20,7 @@ public class Payment {
     }
 
     public Payment(LocalDate date) {
-        this.date = date;
-        this.id = UUID.randomUUID().toString();
+        this(UUID.randomUUID().toString(), date);
     }
 
     public Payment(String id, LocalDate date) {
@@ -37,6 +36,10 @@ public class Payment {
         this(type, prise, description, LocalDate.now(), "1");
     }
 
+    public Payment(PaymentType type, int prise, String description, LocalDate date, String userID) {
+        this(UUID.randomUUID().toString(), type, prise, description, date, userID);
+    }
+
     public Payment(String id, PaymentType type, int prise, String description, LocalDate date, String userID) {
         this.id = id;
         this.type = type;
@@ -44,10 +47,6 @@ public class Payment {
         this.description = description;
         this.date = date;
         this.userID = userID;
-    }
-
-    public Payment(PaymentType type, int prise, String description, LocalDate date, String userID) {
-        this(UUID.randomUUID().toString(), type, prise, description, date, userID);
     }
 
     public String getId() {

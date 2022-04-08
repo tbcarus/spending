@@ -2,71 +2,40 @@ package ru.spending.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class DateUtil {
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    public static final Date NOW = dateOnly(new Date());
-    public static String defaultPeriodStartDate = startDatePeriodStr();
-    public static String customStartDatePeriod;
+    public static final LocalDate NOW = LocalDate.now();
+    public static LocalDate customStartDatePeriod = NOW;
 
-    public static Calendar cal = new GregorianCalendar();
+    public static LocalDate startDatePeriod() {
+        return startDatePeriod(NOW);
+    }
 
-    public static Date dateOnly(Date date) {
+    public static LocalDate endDatePeriod() {
+        return endDatePeriod(NOW);
+    }
 
-        try {
-            return FORMATTER.parse(FORMATTER.format(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public static LocalDate startDatePeriod(LocalDate inputDate) {
+        LocalDate date = inputDate;
+        if (NOW.getDayOfMonth() < 10) {
+            date = date.minusMonths(1);
         }
-        return null;
-    }
-
-    public static Date startDatePeriod() {
-        Date date = (Date) NOW.clone();
-        if (date.getDay() < 10) {
-            date.setMonth(date.getMonth() - 1);
-        }
-        date.setDate(10);
-        return dateOnly(date);
-    }
-
-    public static String startDatePeriodStr() {
-        return FORMATTER.format(startDatePeriod());
-    }
-
-    public static Date endDatePeriod() {
-        Date date = startDatePeriod();
-        date.setMonth(date.getMonth() + 1);
         return date;
     }
 
-    public static String endDatePeriodStr() {
-        return FORMATTER.format(endDatePeriod());
+    public static LocalDate endDatePeriod(LocalDate inputDate) {
+        LocalDate date = startDatePeriod(inputDate);
+        return date.plusMonths(1);
     }
 
-    public static Date startDatePeriod(Date inputDate) {
-        Date date = (Date) inputDate.clone();
-        if (date.getDay() < 10) {
-            date.setMonth(date.getMonth() - 1);
-        }
-        date.setDate(10);
-        return dateOnly(date);
-    }
-
-    public static String startDatePeriodStr(Date inputDate) {
-        return FORMATTER.format(startDatePeriod(inputDate));
-    }
-
-    public static Date endDatePeriod(Date inputDate) {
-        Date date = startDatePeriod(inputDate);
-        date.setMonth(date.getMonth() + 1);
-        return date;
-    }
-
-    public static String endDatePeriodStr(Date inputDate) {
-        return FORMATTER.format(endDatePeriod(inputDate));
+    public static String toStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
     }
 }

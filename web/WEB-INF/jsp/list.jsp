@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="ru.spending.model.PaymentType" %>
+<%@ page import="ru.spending.model.User" %>
 <%@ page import="ru.spending.util.DateUtil" %>
-<%@ page info="java.util.Calendar" %>
 
 <html>
 <head>
@@ -14,9 +14,18 @@
 
 <section>
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
-        <button type="submit">Сохранить</button>
-        <input type="hidden" name="post_type" value="list">
         <table border="1" cellpadding="1" cellspacing="1">
+            <tr>
+                <td colspan="7">
+                    <button type="submit">Сохранить</button>
+                </td>
+                <td colspan="7" align="right">
+                    <c:set var="user" value="${user}"/>
+                    <jsp:useBean id="user" class="ru.spending.model.User"/>
+                    <b><a href="spending?uuid=${user.uuid}&action=settings">${user.name}</a></b>
+                </td>
+            </tr>
+            <input type="hidden" name="post_type" value="list">
             <c:set var="map" value="${map}"/>
             <c:set var="delta" value="2"/>
             <jsp:useBean id="map"
@@ -70,7 +79,7 @@
                 </tr>
             </c:forEach>
 
-<%--            Вывод записей затрат в таблицу--%>
+            <%--            Вывод записей затрат в таблицу--%>
             <c:forEach var="i" begin="0" end="${maxSize-1}" step="1">
                 <tr>
                     <c:forEach var="pt" items="${PaymentType.values()}">
@@ -104,13 +113,23 @@
 
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="post_type" value="start_date_change">
-        <input type="text" name="qwer" value="${DateUtil.FORMATTER.format(DateUtil.NOW)}">
-        <input type="text" name="qwer" value="${DateUtil.startDatePeriodStr()}">
-        <input type="text" name="qwer" value="${DateUtil.endDatePeriodStr()}">
         <BR>
-        <input type="date" name="start_date" value="${DateUtil.startDatePeriodStr()}">
-
+        <input type="date" name="start_date" value="${DateUtil.startDatePeriod()}">
+        <br>
+        <input type="checkbox" name="showToNow"> Показать записи до текущей даты
+        <br>
+        <input type="checkbox" name="showAll"> Показать записи за всё время
+        <br>
+        <button type="submit">Изменить период</button>
     </form>
+
+    <hr>
+    test data section <br>
+    <input type="text" name="qwer" value="${DateUtil.NOW}">
+    <input type="text" name="qwer" value="${DateUtil.startDatePeriod()}">
+    <input type="text" name="qwer" value="${DateUtil.endDatePeriod()}">
+    <input type="text" name="qwer" value="${DateUtil.customStartDatePeriod}">
+
 </section>
 </body>
 </html>

@@ -2,6 +2,7 @@ package ru.spending.storage;
 
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
+import ru.spending.model.User;
 
 import java.util.Date;
 import java.util.List;
@@ -12,7 +13,11 @@ public interface Storage {
 
     Payment get(String id);
 
+    User getUser(String email);
+
     void update(Payment p);
+
+    void updateUser(User user);
 
     void delete(String id);
 

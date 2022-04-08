@@ -2,6 +2,7 @@ package ru.spending.web;
 
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
+import ru.spending.model.User;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
@@ -11,10 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +30,12 @@ public class SpendingServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
-            String startDate = request.getParameter("start_date");
+            User user = storage.getUser("l@og.in");
             Map<PaymentType, List<Payment>> allSorted = storage.getAllSorted();
 
 //            storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()), java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
             int maxSize = maxSize(allSorted);
+            request.setAttribute("user", user);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
             request.setAttribute("sumAll", storage.getSumAll());
@@ -59,6 +58,9 @@ public class SpendingServlet extends HttpServlet {
             case "edit":
                 p = storage.get(uuid);
                 break;
+            case "settings":
+                request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp").forward(request, response);
+                return;
             case "refill":
                 Config.getINSTANCE().refillDB();
                 response.sendRedirect("spending");
@@ -111,7 +113,7 @@ public class SpendingServlet extends HttpServlet {
                 }
                 break;
             case "start_date_change":
-                DateUtil.customStartDatePeriod = request.getParameter("start_date");
+                DateUtil.customStartDatePeriod = LocalDate.parse(request.getParameter("start_date"));
                 break;
         }
         response.sendRedirect("spending");
