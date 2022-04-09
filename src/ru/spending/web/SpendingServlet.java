@@ -3,6 +3,7 @@ package ru.spending.web;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.model.User;
+import ru.spending.model.Users;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
@@ -29,8 +30,8 @@ public class SpendingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
+        User user = Users.getUser("l@og.in");
         if (action == null) {
-            User user = storage.getUser("l@og.in");
             Map<PaymentType, List<Payment>> allSorted = storage.getAllSorted();
 
 //            storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()), java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
@@ -113,7 +114,14 @@ public class SpendingServlet extends HttpServlet {
                 }
                 break;
             case "start_date_change":
-                DateUtil.customStartDatePeriod = LocalDate.parse(request.getParameter("start_date"));
+                String userID = request.getParameter("uuid");
+                String  userEmail = request.getParameter("email");
+                int startDay = Integer.parseInt(request.getParameter("start_day"));
+                int startMonth = Integer.parseInt(request.getParameter("start_month"));
+                int startYear = Integer.parseInt(request.getParameter("start_year"));
+                User user = Users.getUser(userEmail);
+                user.setStartPeriodDate(LocalDate.of(startYear, startMonth, startDay));
+                storage.updateUser(user);
                 break;
         }
         response.sendRedirect("spending");

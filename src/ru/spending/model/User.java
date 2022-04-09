@@ -2,10 +2,10 @@ package ru.spending.model;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 public class User {
+    private String uuid;
     private String name;
     private String email;
     private String password;
@@ -15,15 +15,20 @@ public class User {
     public User() {
     }
 
-    protected User(String name, String email, String password) {
-        this(name, email, password, LocalDate.of(Year.now().getValue(), LocalDate.now().getMonth().getValue(), 10));
+    public User(String name, String email, String password) {
+        this(UUID.randomUUID().toString(), name, email, password, LocalDate.of(Year.now().getValue(), LocalDate.now().getMonth().getValue(), 10));
     }
 
-    protected User(String name, String email, String password, LocalDate startPeriodDate) {
+    public User(String uuid, String name, String email, String password, LocalDate startPeriodDate) {
+        this.uuid = uuid;
         this.name = name;
         this.email = email;
         this.password = password;
         this.startPeriodDate = startPeriodDate;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getName() {

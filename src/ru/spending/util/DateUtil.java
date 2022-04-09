@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 
 public class DateUtil {
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateTimeFormatter DTFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
     public static final LocalDate NOW = LocalDate.now();
     public static LocalDate customStartDatePeriod = NOW;
 

@@ -3,15 +3,17 @@ package ru.spending.storage;
 import ru.spending.exception.NotExistStorageException;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
+import ru.spending.model.User;
+import ru.spending.model.Users;
 import ru.spending.sql.ConnectionFactory;
 import ru.spending.sql.SqlHelper;
 import ru.spending.util.DateUtil;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     public final ConnectionFactory connectionFactory;
@@ -62,6 +64,22 @@ public class SqlStorage implements Storage {
     }
 
     @Override
+    public User getUser(String email) {
+        return sqlHelper.execute("SELECT * FROM users WHERE email=?", ps -> {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new NotExistStorageException("User with email " + email + "not exist");
+            }
+            String id = rs.getString("id").trim();
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            LocalDate startDatePeriod = LocalDate.parse(rs.getString("start_period_date").split(" ")[0]);
+            return new User(id, name, email, password, startDatePeriod);
+        });
+    }
+
+    @Override
     public void update(Payment p) {
         sqlHelper.execute("UPDATE costs SET type=?, prise=?, description=?, date=?, user_id=? WHERE id=?", ps -> {
             ps.setString(1, p.getType().name());
@@ -72,6 +90,20 @@ public class SqlStorage implements Storage {
             ps.setString(6, p.getId());
             if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException("Запись " + p.getId() + " не найдена");
+            }
+            return null;
+        });
+    }
+
+    @Override
+    public void updateUser(User user) {
+        sqlHelper.execute("UPDATE users SET name=?, password=?, start_period_date=? WHERE id=?", ps -> {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getPassword());
+            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atTime(0,0,0).format(DateUtil.DTFORMATTER)));
+            ps.setString(4, user.getUuid());
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException("User with uuid " + user.getUuid() + " not exist");
             }
             return null;
         });

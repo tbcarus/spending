@@ -3,6 +3,8 @@
 <%@ page import="ru.spending.model.PaymentType" %>
 <%@ page import="ru.spending.model.User" %>
 <%@ page import="ru.spending.util.DateUtil" %>
+<%@ page import="java.time.Month" %>
+<%@ page import="java.time.Year" %>
 
 <html>
 <head>
@@ -13,7 +15,12 @@
 <body>
 
 <section>
+
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
+
+        <input type="hidden" name="post_type" value="list">
+        <input type="hidden" name="uuid" value="${user.uuid}">
+        <input type="hidden" name="email" value="${user.email}">
         <table border="1" cellpadding="1" cellspacing="1">
             <tr>
                 <td colspan="7">
@@ -21,11 +28,9 @@
                 </td>
                 <td colspan="7" align="right">
                     <c:set var="user" value="${user}"/>
-                    <jsp:useBean id="user" class="ru.spending.model.User"/>
                     <b><a href="spending?uuid=${user.uuid}&action=settings">${user.name}</a></b>
                 </td>
             </tr>
-            <input type="hidden" name="post_type" value="list">
             <c:set var="map" value="${map}"/>
             <c:set var="delta" value="2"/>
             <jsp:useBean id="map"
@@ -107,18 +112,37 @@
 
         </table>
         <a href="spending?action=create">Add new payment <img src="img/add.png"></a><br>
+        <input type="checkbox" name="showToNow"> Показать записи до сегодняшней даты
+        <br>
+        <input type="checkbox" name="showAll"> Показать записи за всё время
+        <br>
         <a href="spending?action=refill">RefillDB</a>
         ${maxSize}
     </form>
 
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="post_type" value="start_date_change">
-        <BR>
-        <input type="date" name="start_date" value="${DateUtil.startDatePeriod()}">
+        <input type="hidden" name="uuid" value="${user.uuid}">
+        <input type="hidden" name="email" value="${user.email}">
         <br>
-        <input type="checkbox" name="showToNow"> Показать записи до текущей даты
-        <br>
-        <input type="checkbox" name="showAll"> Показать записи за всё время
+        <select name="start_day">
+            <option value="${user.startPeriodDate.dayOfMonth}" selected hidden>${user.startPeriodDate.dayOfMonth}</option>
+            <c:forEach var="i" begin="1" end="28">
+                <option value="${i}">${i}</option>
+            </c:forEach>
+        </select>
+        <select name="start_month">
+            <option value="${user.startPeriodDate.month.value}" selected hidden>${user.startPeriodDate.month.name()}</option>
+            <c:forEach var="i" begin="1" end="12">
+                <option value="${i}">${Month.of(i).name()}</option>
+            </c:forEach>
+        </select>
+        <select name="start_year">
+            <option value="${user.startPeriodDate.year}" selected hidden>${user.startPeriodDate.year}</option>
+            <c:forEach var="i" begin="2010" end="${Year.now().getValue()}">
+                <option value="${i}">${i}</option>
+            </c:forEach>
+        </select>
         <br>
         <button type="submit">Изменить период</button>
     </form>
