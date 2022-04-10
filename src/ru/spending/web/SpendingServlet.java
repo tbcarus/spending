@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,17 +31,34 @@ public class SpendingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
+        String view = request.getParameter("view");
         User user = Users.getUser("l@og.in");
         if (action == null) {
-            Map<PaymentType, List<Payment>> allSorted = storage.getAllSorted();
-
-//            storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()), java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
+            Map<PaymentType, List<Payment>> allSorted;
+            if (view == null) {
+                view = "";
+            }
+            switch (view) {
+                case "toCurrentDate":
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                case "allTime":
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                case "allUsersPayments":
+                    allSorted = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                default:
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
+                    break;
+            }
             int maxSize = maxSize(allSorted);
             request.setAttribute("user", user);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
-            request.setAttribute("sumAll", storage.getSumAll());
-            request.setAttribute("sumMapByType", storage.getSumMapByType());
+            Map<PaymentType, Integer> sumMapByType = getSumMapByType(allSorted);
+            request.setAttribute("sumMapByType", sumMapByType);
+            request.setAttribute("sumAll", getSumAll(sumMapByType));
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
@@ -136,4 +154,29 @@ public class SpendingServlet extends HttpServlet {
         }
         return max;
     }
+
+    private int getSumByType(List<Payment> list) {
+        int sum = 0;
+        for (Payment p : list) {
+            sum += p.getPrise();
+        }
+        return sum;
+    }
+
+    private Map<PaymentType, Integer> getSumMapByType(Map<PaymentType, List<Payment>> map) {
+        Map<PaymentType, Integer> sumMap = new HashMap<>();
+        for (PaymentType pt : map.keySet()) {
+            sumMap.put(pt, getSumByType(map.get(pt)));
+        }
+        return sumMap;
+    }
+
+    private int getSumAll(Map<PaymentType, Integer> map) {
+        int sum = 0;
+        for (PaymentType pt : map.keySet()) {
+            sum += map.get(pt);
+        }
+        return sum;
+    }
+
 }

@@ -135,7 +135,7 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public Map<PaymentType, List<Payment>> getAllSorted() {
+    public Map<PaymentType, List<Payment>> getAllSorted(LocalDate startDate, LocalDate endDate) {
         return sqlHelper.execute("SELECT * FROM costs", ps -> {
             ResultSet rs = ps.executeQuery();
             return getPaymentMap(rs);
@@ -143,7 +143,7 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public Map<PaymentType, List<Payment>> getAllSortedByDate(String userID, LocalDate startDate, LocalDate endDate) {
+    public Map<PaymentType, List<Payment>> getAllSortedByUser(String userID, LocalDate startDate, LocalDate endDate) {
         return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ?", ps -> {
             ps.setString(1, userID);
             ps.setDate(2, Date.valueOf(startDate));
@@ -166,24 +166,6 @@ public class SqlStorage implements Storage {
     public int getSumType(PaymentType paymentType) {
         return sqlHelper.execute("SELECT SUM(prise) FROM costs WHERE type = ?", ps -> {
             ps.setString(1, paymentType.name());
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        });
-    }
-
-    @Override
-    public Map<PaymentType, Integer> getSumMapByType() {
-        Map<PaymentType, Integer> map = new HashMap<>();
-        for (PaymentType pt : PaymentType.values()) {
-            map.put(pt, getSumType(pt));
-        }
-        return map;
-    }
-
-    @Override
-    public int getSumAll() {
-        return sqlHelper.execute("SELECT SUM(prise) FROM costs", ps -> {
             ResultSet rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);
