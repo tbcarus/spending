@@ -4,16 +4,16 @@ import ru.spending.exception.NotExistStorageException;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.model.User;
-import ru.spending.model.Users;
 import ru.spending.sql.ConnectionFactory;
 import ru.spending.sql.SqlHelper;
 import ru.spending.util.DateUtil;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SqlStorage implements Storage {
     public final ConnectionFactory connectionFactory;
@@ -100,7 +100,7 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("UPDATE users SET name=?, password=?, start_period_date=? WHERE id=?", ps -> {
             ps.setString(1, user.getName());
             ps.setString(2, user.getPassword());
-            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atTime(0,0,0).format(DateUtil.DTFORMATTER)));
+            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atTime(0, 0, 0).format(DateUtil.DTFORMATTER)));
             ps.setString(4, user.getUuid());
             if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException("User with uuid " + user.getUuid() + " not exist");
@@ -136,34 +136,20 @@ public class SqlStorage implements Storage {
 
     @Override
     public Map<PaymentType, List<Payment>> getAllSorted() {
-        return sqlHelper.transactionalExecute(conn -> {
-            Map<PaymentType, List<Payment>> map = new HashMap<>();
-            for (PaymentType paymentType : PaymentType.values()) {
-                try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM costs WHERE type = ?")) {
-                    ps.setString(1, paymentType.name());
-                    ResultSet rs = ps.executeQuery();
-                    map.put(paymentType, getPaymentList(rs));
-                }
-            }
-            return map;
+        return sqlHelper.execute("SELECT * FROM costs", ps -> {
+            ResultSet rs = ps.executeQuery();
+            return getPaymentMap(rs);
         });
     }
 
     @Override
-    public Map<PaymentType, List<Payment>> getAllSortedByDate(Date startDate, Date endDate) {
-        return sqlHelper.transactionalExecute(conn -> {
-            Map<PaymentType, List<Payment>> map = new HashMap<>();
-            for (PaymentType paymentType : PaymentType.values()) {
-                try (PreparedStatement ps = conn.prepareStatement(
-                        "SELECT * FROM costs WHERE type = ? AND date BETWEEN ? AND ?")) {
-                    ps.setString(1, paymentType.name());
-                    ps.setDate(2, (java.sql.Date) startDate);
-                    ps.setDate(3, (java.sql.Date) endDate);
-                    ResultSet rs = ps.executeQuery();
-                    map.put(paymentType, getPaymentList(rs));
-                }
-            }
-            return map;
+    public Map<PaymentType, List<Payment>> getAllSortedByDate(String userID, LocalDate startDate, LocalDate endDate) {
+        return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ?", ps -> {
+            ps.setString(1, userID);
+            ps.setDate(2, Date.valueOf(startDate));
+            ps.setDate(3, Date.valueOf(endDate));
+            ResultSet rs = ps.executeQuery();
+            return getPaymentMap(rs);
         });
     }
 
@@ -222,5 +208,19 @@ public class SqlStorage implements Storage {
             list.add(restorePayment(rs));
         }
         return list;
+    }
+
+    private Map<PaymentType, List<Payment>> getPaymentMap(ResultSet rs) throws SQLException {
+        Map<PaymentType, List<Payment>> map = new HashMap<>();
+        for (PaymentType pt : PaymentType.values()) {
+            map.put(pt, new ArrayList<>());
+        }
+        while (rs.next()) {
+            Payment p = restorePayment(rs);
+            List<Payment> list = map.get(p.getType());
+            list.add(p);
+            map.put(p.getType(), list);
+        }
+        return map;
     }
 }
