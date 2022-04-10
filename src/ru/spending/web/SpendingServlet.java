@@ -62,7 +62,7 @@ public class SpendingServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
-        Payment p = null;
+        Payment p;
         switch (action) {
             case "delete":
                 storage.delete(uuid);
@@ -94,7 +94,7 @@ public class SpendingServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String postType = request.getParameter("post_type");
 
@@ -113,6 +113,7 @@ public class SpendingServlet extends HttpServlet {
                                 Payment p = new Payment(pt, Integer.parseInt(str), description);
                                 storage.save(p);
                             } catch (NumberFormatException exc) {
+                                exc.printStackTrace();
                             }
                             counter++;
                         }

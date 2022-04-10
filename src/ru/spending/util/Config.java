@@ -7,7 +7,6 @@ import ru.spending.storage.SqlStorage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Properties;
 
 public class Config {

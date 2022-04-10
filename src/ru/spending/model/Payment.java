@@ -3,7 +3,6 @@ package ru.spending.model;
 import ru.spending.util.DateUtil;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
