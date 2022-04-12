@@ -3,14 +3,17 @@ package ru.spending.storage;
 import ru.spending.exception.NotExistStorageException;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
+import ru.spending.model.User;
 import ru.spending.sql.ConnectionFactory;
 import ru.spending.sql.SqlHelper;
 import ru.spending.util.DateUtil;
 
 import java.sql.*;
-import java.text.ParseException;
-import java.util.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SqlStorage implements Storage {
     public final ConnectionFactory connectionFactory;
@@ -39,7 +42,7 @@ public class SqlStorage implements Storage {
             ps.setString(2, p.getType().name());
             ps.setInt(3, p.getPrise());
             ps.setString(4, p.getDescription() == null ? "" : p.getDescription());
-            ps.setDate(5, java.sql.Date.valueOf(DateUtil.FORMATTER.format(p.getDate())));
+            ps.setDate(5, java.sql.Date.valueOf(p.getDate()));
             ps.setString(6, p.getUserID() == null ? "1" : p.getUserID());
             ps.execute();
 
@@ -61,9 +64,49 @@ public class SqlStorage implements Storage {
     }
 
     @Override
+    public User getUser(String email) {
+        return sqlHelper.execute("SELECT * FROM users WHERE email=?", ps -> {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new NotExistStorageException("User with email " + email + "not exist");
+            }
+            String id = rs.getString("id").trim();
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            LocalDate startDatePeriod = LocalDate.parse(rs.getString("start_period_date").split(" ")[0]);
+            return new User(id, name, email, password, startDatePeriod);
+        });
+    }
+
+    @Override
     public void update(Payment p) {
-        delete(p.getId());
-        save(p);
+        sqlHelper.execute("UPDATE costs SET type=?, prise=?, description=?, date=?, user_id=? WHERE id=?", ps -> {
+            ps.setString(1, p.getType().name());
+            ps.setInt(2, p.getPrise());
+            ps.setString(3, p.getDescription());
+            ps.setDate(4, java.sql.Date.valueOf(p.getDate()));
+            ps.setString(5, p.getUserID());
+            ps.setString(6, p.getId());
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException("Запись " + p.getId() + " не найдена");
+            }
+            return null;
+        });
+    }
+
+    @Override
+    public void updateUser(User user) {
+        sqlHelper.execute("UPDATE users SET name=?, password=?, start_period_date=? WHERE id=?", ps -> {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getPassword());
+            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atTime(0, 0, 0).format(DateUtil.DTFORMATTER)));
+            ps.setString(4, user.getUuid());
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException("User with uuid " + user.getUuid() + " not exist");
+            }
+            return null;
+        });
     }
 
     @Override
@@ -92,35 +135,21 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public Map<PaymentType, List<Payment>> getAllSorted() {
-        return sqlHelper.transactionalExecute(conn -> {
-            Map<PaymentType, List<Payment>> map = new HashMap<>();
-            for (PaymentType paymentType : PaymentType.values()) {
-                try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM costs WHERE type = ?")) {
-                    ps.setString(1, paymentType.name());
-                    ResultSet rs = ps.executeQuery();
-                    map.put(paymentType, getPaymentList(rs));
-                }
-            }
-            return map;
+    public Map<PaymentType, List<Payment>> getAllSorted(LocalDate startDate, LocalDate endDate) {
+        return sqlHelper.execute("SELECT * FROM costs", ps -> {
+            ResultSet rs = ps.executeQuery();
+            return getPaymentMap(rs);
         });
     }
 
     @Override
-    public Map<PaymentType, List<Payment>> getAllSortedByDate(Date startDate, Date endDate) {
-        return sqlHelper.transactionalExecute(conn -> {
-            Map<PaymentType, List<Payment>> map = new HashMap<>();
-            for (PaymentType paymentType : PaymentType.values()) {
-                try (PreparedStatement ps = conn.prepareStatement(
-                        "SELECT * FROM costs WHERE type = ? AND date BETWEEN ? AND ?")) {
-                    ps.setString(1, paymentType.name());
-                    ps.setDate(2, (java.sql.Date) startDate);
-                    ps.setDate(3, (java.sql.Date) endDate);
-                    ResultSet rs = ps.executeQuery();
-                    map.put(paymentType, getPaymentList(rs));
-                }
-            }
-            return map;
+    public Map<PaymentType, List<Payment>> getAllSortedByUser(String userID, LocalDate startDate, LocalDate endDate) {
+        return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ?", ps -> {
+            ps.setString(1, userID);
+            ps.setDate(2, Date.valueOf(startDate));
+            ps.setDate(3, Date.valueOf(endDate));
+            ResultSet rs = ps.executeQuery();
+            return getPaymentMap(rs);
         });
     }
 
@@ -143,35 +172,14 @@ public class SqlStorage implements Storage {
         });
     }
 
-    @Override
-    public Map<PaymentType, Integer> getSumMapByType() {
-        Map<PaymentType, Integer> map = new HashMap<>();
-        for(PaymentType pt : PaymentType.values()) {
-            map.put(pt, getSumType(pt));
-        }
-        return map;
-    }
-
-    @Override
-    public int getSumAll() {
-        return sqlHelper.execute("SELECT SUM(prise) FROM costs", ps -> {
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        });
-    }
-
+    //Восстановление экземпляра класса Payment по данным из БД
     private Payment restorePayment(ResultSet rs) throws SQLException {
         String paymentID = rs.getString("id").trim();
         PaymentType paymentType = PaymentType.valueOf(rs.getString("type"));
         int prise = rs.getInt("prise");
         String description = rs.getString("description");
-        Date date = null;
-        try {
-            date = DateUtil.FORMATTER.parse(rs.getString("date"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        LocalDate date = null;
+        date = LocalDate.parse(rs.getString("date"));
         String userID = rs.getString("user_id").trim();
         return new Payment(paymentID, paymentType, prise, description, date, userID);
     }
@@ -182,5 +190,19 @@ public class SqlStorage implements Storage {
             list.add(restorePayment(rs));
         }
         return list;
+    }
+
+    private Map<PaymentType, List<Payment>> getPaymentMap(ResultSet rs) throws SQLException {
+        Map<PaymentType, List<Payment>> map = new HashMap<>();
+        for (PaymentType pt : PaymentType.values()) {
+            map.put(pt, new ArrayList<>());
+        }
+        while (rs.next()) {
+            Payment p = restorePayment(rs);
+            List<Payment> list = map.get(p.getType());
+            list.add(p);
+            map.put(p.getType(), list);
+        }
+        return map;
     }
 }

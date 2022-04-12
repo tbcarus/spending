@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="ru.spending.model.PaymentType" %>
+<%@ page import="ru.spending.model.User" %>
 <%@ page import="ru.spending.util.DateUtil" %>
-<%@ page info="java.util.Calendar" %>
+<%@ page import="java.time.Month" %>
+<%@ page import="java.time.Year" %>
 
 <html>
 <head>
@@ -13,10 +15,22 @@
 <body>
 
 <section>
+
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
-        <button type="submit">Сохранить</button>
+
         <input type="hidden" name="post_type" value="list">
+        <input type="hidden" name="uuid" value="${user.uuid}">
+        <input type="hidden" name="email" value="${user.email}">
         <table border="1" cellpadding="1" cellspacing="1">
+            <tr>
+                <td colspan="7">
+                    <button type="submit">Сохранить / Обновить</button>
+                </td>
+                <td colspan="7" align="right">
+                    <c:set var="user" value="${user}"/>
+                    <b><a href="spending?uuid=${user.uuid}&action=settings">${user.name}</a></b>
+                </td>
+            </tr>
             <c:set var="map" value="${map}"/>
             <c:set var="delta" value="2"/>
             <jsp:useBean id="map"
@@ -70,49 +84,82 @@
                 </tr>
             </c:forEach>
 
-<%--            Вывод записей затрат в таблицу--%>
-            <c:forEach var="i" begin="0" end="${maxSize-1}" step="1">
-                <tr>
-                    <c:forEach var="pt" items="${PaymentType.values()}">
-                        <jsp:useBean id="pt" type="ru.spending.model.PaymentType"/>
-                        <c:set var="payment_record" value="${map.get(pt)[i]}"/>
-                        <jsp:useBean id="payment_record" class="ru.spending.model.Payment" scope="request"/>
-                        <td>
-                            <c:if test="${i < map.get(pt).size()}">
-                                <a href="spending?uuid=${payment_record.id}&action=edit">${payment_record.prise}</a>
-                                <a href="spending?uuid=${payment_record.id}&action=delete"><img
-                                        src="img/delete.png"></a>
-                            </c:if>
-                        </td>
-                        <c:if test="${pt == PaymentType.CAR || pt == PaymentType.ENTERTAINMENT ||
-                            pt == PaymentType.CHILDREN || pt == PaymentType.OTHER}">
+            <%--            Вывод записей затрат в таблицу--%>
+            <c:if test="${maxSize > 0}">
+                <c:forEach var="i" begin="0" end="${maxSize-1}" step="1">
+                    <tr>
+                        <c:forEach var="pt" items="${PaymentType.values()}">
+                            <jsp:useBean id="pt" type="ru.spending.model.PaymentType"/>
+                            <c:set var="payment_record" value="${map.get(pt)[i]}"/>
+                            <jsp:useBean id="payment_record" class="ru.spending.model.Payment" scope="request"/>
                             <td>
                                 <c:if test="${i < map.get(pt).size()}">
-                                    ${map.get(pt)[i].description}
+                                    <a href="spending?uuid=${payment_record.id}&action=edit">${payment_record.prise}</a>
+                                    <a href="spending?uuid=${payment_record.id}&action=delete"><img
+                                            src="img/delete.png"></a>
                                 </c:if>
                             </td>
-                        </c:if>
-                    </c:forEach>
-                </tr>
-            </c:forEach>
+                            <c:if test="${pt == PaymentType.CAR || pt == PaymentType.ENTERTAINMENT ||
+                            pt == PaymentType.CHILDREN || pt == PaymentType.OTHER}">
+                                <td>
+                                    <c:if test="${i < map.get(pt).size()}">
+                                        ${map.get(pt)[i].description}
+                                    </c:if>
+                                </td>
+                            </c:if>
+                        </c:forEach>
+                    </tr>
+                </c:forEach>
+            </c:if>
 
         </table>
         <a href="spending?action=create">Add new payment <img src="img/add.png"></a><br>
+        <input type="button" onclick="window.location.href = 'spending?view=toCurrentDate';" value="Показать записи до сегодняшней даты"/>
+        <br><br>
+        <input type="button" onclick="window.location.href = 'spending?view=allTime';" value="Показать записи за всё время"/>
+        <br><br>
+        <input type="button" onclick="window.location.href = 'spending?view=allUsersPayments';" value="Показать записи всех пользователей"/>
+        <br>
         <a href="spending?action=refill">RefillDB</a>
         ${maxSize}
     </form>
 
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="post_type" value="start_date_change">
-        <input type="text" name="qwer" value="${DateUtil.FORMATTER.format(DateUtil.NOW)}">
-        <input type="text" name="qwer" value="${DateUtil.startDatePeriodStr()}">
-        <input type="text" name="qwer" value="${DateUtil.endDatePeriodStr()}">
-        <BR>
-        <input type="date" name="start_date" value="${DateUtil.startDatePeriodStr()}">
-        <button type="submit">Изменить период</button>
+        <input type="hidden" name="uuid" value="${user.uuid}">
+        <input type="hidden" name="email" value="${user.email}">
         <br>
-        <input type="text" value="${DateUtil.FORMATTER.format(DateUtil.cal.getTime())}">
+        <select name="start_day">
+            <option value="${user.startPeriodDate.dayOfMonth}" selected
+                    hidden>${user.startPeriodDate.dayOfMonth}</option>
+            <c:forEach var="i" begin="1" end="28">
+                <option value="${i}">${i}</option>
+            </c:forEach>
+        </select>
+        <select name="start_month">
+            <option value="${user.startPeriodDate.month.value}" selected
+                    hidden>${user.startPeriodDate.month.name()}</option>
+            <c:forEach var="i" begin="1" end="12">
+                <option value="${i}">${Month.of(i).name()}</option>
+            </c:forEach>
+        </select>
+        <select name="start_year">
+            <option value="${user.startPeriodDate.year}" selected hidden>${user.startPeriodDate.year}</option>
+            <c:forEach var="i" begin="2010" end="${Year.now().getValue()}">
+                <option value="${i}">${i}</option>
+            </c:forEach>
+        </select>
+        <br>
+        <button type="submit">Изменить начальную дату</button>
     </form>
+<hr>
+    Test data section
+    <br>
+    <input value="${user.uuid}">
+    <input value="${user.getStartPeriodDate()}">
+    <input value="${user.getEndPeriodDate()}">
+    <br>
+
 </section>
 </body>
 </html>

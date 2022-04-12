@@ -2,6 +2,8 @@ package ru.spending.web;
 
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
+import ru.spending.model.User;
+import ru.spending.model.Users;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
@@ -11,9 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,27 +31,45 @@ public class SpendingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
+        String view = request.getParameter("view");
+        User user = Users.getUser("l@og.in");
         if (action == null) {
-            String startDate = request.getParameter("start_date");
-            Map<PaymentType, List<Payment>> allSorted = storage.getAllSorted();
-//            allSorted = storage.getAllSortedByDate(java.sql.Date.valueOf(DateUtil.startDatePeriodStr()),
-//                    java.sql.Date.valueOf(DateUtil.endDatePeriodStr()));
+            Map<PaymentType, List<Payment>> allSorted;
+            if (view == null) {
+                view = "";
+            }
+            switch (view) {
+                case "toCurrentDate":
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                case "allTime":
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                case "allUsersPayments":
+                    allSorted = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    break;
+                default:
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
+                    break;
+            }
             int maxSize = maxSize(allSorted);
+            request.setAttribute("user", user);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
-            request.setAttribute("sumAll", storage.getSumAll());
-            request.setAttribute("sumMapByType", storage.getSumMapByType());
+            Map<PaymentType, Integer> sumMapByType = getSumMapByType(allSorted);
+            request.setAttribute("sumMapByType", sumMapByType);
+            request.setAttribute("sumAll", getSumAll(sumMapByType));
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
-        Payment p = null;
+        Payment p;
         switch (action) {
             case "delete":
                 storage.delete(uuid);
                 response.sendRedirect("spending");
                 return;
             case "create":
-                p = new Payment("new", DateUtil.NOW);
+                p = new Payment("new", LocalDate.now());
                 break;
             case "view":
                 p = storage.get(uuid);
@@ -58,6 +77,9 @@ public class SpendingServlet extends HttpServlet {
             case "edit":
                 p = storage.get(uuid);
                 break;
+            case "settings":
+                request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp").forward(request, response);
+                return;
             case "refill":
                 Config.getINSTANCE().refillDB();
                 response.sendRedirect("spending");
@@ -72,7 +94,7 @@ public class SpendingServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String postType = request.getParameter("post_type");
 
@@ -91,6 +113,7 @@ public class SpendingServlet extends HttpServlet {
                                 Payment p = new Payment(pt, Integer.parseInt(str), description);
                                 storage.save(p);
                             } catch (NumberFormatException exc) {
+                                exc.printStackTrace();
                             }
                             counter++;
                         }
@@ -98,26 +121,26 @@ public class SpendingServlet extends HttpServlet {
                 }
                 break;
             case "edit":
-                try {
-                    String uuid = request.getParameter("uuid");
-                    PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
-                    int prise = Integer.parseInt(request.getParameter("prise"));
-                    String description = request.getParameter("description");
-                    Date date = DateUtil.FORMATTER.parse(request.getParameter("date"));
-                    if (uuid.equals("new")) {
-                        storage.save(new Payment(paymentType, prise, description, date, "1"));
-                    } else {
-                        storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
-                    }
-                } catch (NullPointerException exc) {
-                } catch (NumberFormatException exc) {
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                String uuid = request.getParameter("uuid");
+                PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
+                int prise = Integer.parseInt(request.getParameter("prise"));
+                String description = request.getParameter("description");
+                LocalDate date = LocalDate.parse(request.getParameter("date"));
+                if (uuid.equals("new")) {
+                    storage.save(new Payment(paymentType, prise, description, date, "1"));
+                } else {
+                    storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
                 }
                 break;
             case "start_date_change":
-                DateUtil.customStartDatePeriod = request.getParameter("start_date");
-                System.out.println(12312);
+                String userID = request.getParameter("uuid");
+                String  userEmail = request.getParameter("email");
+                int startDay = Integer.parseInt(request.getParameter("start_day"));
+                int startMonth = Integer.parseInt(request.getParameter("start_month"));
+                int startYear = Integer.parseInt(request.getParameter("start_year"));
+                User user = Users.getUser(userEmail);
+                user.setStartPeriodDate(LocalDate.of(startYear, startMonth, startDay));
+                storage.updateUser(user);
                 break;
         }
         response.sendRedirect("spending");
@@ -132,4 +155,29 @@ public class SpendingServlet extends HttpServlet {
         }
         return max;
     }
+
+    private int getSumByType(List<Payment> list) {
+        int sum = 0;
+        for (Payment p : list) {
+            sum += p.getPrise();
+        }
+        return sum;
+    }
+
+    private Map<PaymentType, Integer> getSumMapByType(Map<PaymentType, List<Payment>> map) {
+        Map<PaymentType, Integer> sumMap = new HashMap<>();
+        for (PaymentType pt : map.keySet()) {
+            sumMap.put(pt, getSumByType(map.get(pt)));
+        }
+        return sumMap;
+    }
+
+    private int getSumAll(Map<PaymentType, Integer> map) {
+        int sum = 0;
+        for (PaymentType pt : map.keySet()) {
+            sum += map.get(pt);
+        }
+        return sum;
+    }
+
 }

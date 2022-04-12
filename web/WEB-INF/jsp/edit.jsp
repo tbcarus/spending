@@ -59,13 +59,13 @@
                     Дата:
                 </td>
                 <td>
-                    <input type="date" name="date" value="${DateUtil.FORMATTER.format(payment.date)}">
+                    <input type="date" name="date" value="${payment.date}">
                 </td>
             </tr>
         </table>
         <hr>
         <button type="submit">Сохранить</button>
-        <button onclick="window.history.back()">Отменить</button>
+        <input type="button" value=" Отменить " onclick="history.go(-1);" />
     </form>
 </section>
 <%--<jsp:include page="fragments/footer.jsp"/>--%>
