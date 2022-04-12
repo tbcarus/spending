@@ -35,6 +35,10 @@ public class Payment {
         this(type, prise, description, LocalDate.now(), "1");
     }
 
+    public Payment(PaymentType type, int prise, String description, LocalDate localDate) {
+        this(type, prise, description, localDate, "1");
+    }
+
     public Payment(PaymentType type, int prise, String description, LocalDate date, String userID) {
         this(UUID.randomUUID().toString(), type, prise, description, date, userID);
     }

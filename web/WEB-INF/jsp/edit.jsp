@@ -18,6 +18,15 @@
         <input type="hidden" name="post_type" value="edit">
         <input type="hidden" name="uuid" value="${payment.id}">
         <table border="1">
+            <c:if test="${!payment.id.equals('new')}">
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="spending?uuid=${payment.id}&action=delete">
+                            <img src="img/delete.png">Удалить запись<img src="img/delete.png">
+                        </a>
+                    </td>
+                </tr>
+            </c:if>
             <tr>
                 <td>
                     Тип:
@@ -65,7 +74,8 @@
         </table>
         <hr>
         <button type="submit">Сохранить</button>
-        <input type="button" value=" Отменить " onclick="history.go(-1);" />
+        <input type="button" value=" Отменить " onclick="history.go(-1);"/>
+        <input type="button" value="Удалить запись" onclick=""/>
     </form>
 </section>
 <%--<jsp:include page="fragments/footer.jsp"/>--%>

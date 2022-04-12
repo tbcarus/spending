@@ -110,7 +110,13 @@ public class SpendingServlet extends HttpServlet {
                                 description = request.getParameterValues(pt.name() + "description")[counter];
                             }
                             try {
-                                Payment p = new Payment(pt, Integer.parseInt(str), description);
+                                Payment p;
+                                if ("on".equals(request.getParameter("at_this_date_checkbox"))) {
+                                    LocalDate localDate = LocalDate.parse(request.getParameter("chosen_date"));
+                                    p = new Payment(pt, Integer.parseInt(str), description, localDate);
+                                } else {
+                                    p = new Payment(pt, Integer.parseInt(str), description);
+                                }
                                 storage.save(p);
                             } catch (NumberFormatException exc) {
                                 exc.printStackTrace();

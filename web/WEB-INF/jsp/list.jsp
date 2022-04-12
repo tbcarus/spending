@@ -23,10 +23,14 @@
         <input type="hidden" name="email" value="${user.email}">
         <table border="1" cellpadding="1" cellspacing="1">
             <tr>
-                <td colspan="7">
+                <td colspan="3">
                     <button type="submit">Сохранить / Обновить</button>
                 </td>
-                <td colspan="7" align="right">
+                <td colspan="9" align="center">
+                    <input type="date" name="chosen_date" value="${DateUtil.NOW.format(DateUtil.DTFORMATTER_DATE_ONLY)}">
+                    <input type="checkbox" name="at_this_date_checkbox">Добавить записи на указанную дату
+                </td>
+                <td colspan="2" align="right">
                     <c:set var="user" value="${user}"/>
                     <b><a href="spending?uuid=${user.uuid}&action=settings">${user.name}</a></b>
                 </td>
@@ -92,11 +96,9 @@
                             <jsp:useBean id="pt" type="ru.spending.model.PaymentType"/>
                             <c:set var="payment_record" value="${map.get(pt)[i]}"/>
                             <jsp:useBean id="payment_record" class="ru.spending.model.Payment" scope="request"/>
-                            <td>
+                            <td align="center">
                                 <c:if test="${i < map.get(pt).size()}">
                                     <a href="spending?uuid=${payment_record.id}&action=edit">${payment_record.prise}</a>
-                                    <a href="spending?uuid=${payment_record.id}&action=delete"><img
-                                            src="img/delete.png"></a>
                                 </c:if>
                             </td>
                             <c:if test="${pt == PaymentType.CAR || pt == PaymentType.ENTERTAINMENT ||
@@ -114,21 +116,19 @@
 
         </table>
         <a href="spending?action=create">Add new payment <img src="img/add.png"></a><br>
-        <input type="button" onclick="window.location.href = 'spending?view=toCurrentDate';" value="Показать записи до сегодняшней даты"/>
-        <br><br>
-        <input type="button" onclick="window.location.href = 'spending?view=allTime';" value="Показать записи за всё время"/>
-        <br><br>
-        <input type="button" onclick="window.location.href = 'spending?view=allUsersPayments';" value="Показать записи всех пользователей"/>
+        <input type="button" onclick="window.location.href = 'spending?view=toCurrentDate';"
+               value="Показать записи до сегодняшней даты"/>
+        <input type="button" onclick="window.location.href = 'spending?view=allTime';"
+               value="Показать записи за всё время"/>
+        <input type="button" onclick="window.location.href = 'spending?view=allUsersPayments';"
+               value="Показать записи всех пользователей"/>
         <br>
-        <a href="spending?action=refill">RefillDB</a>
-        ${maxSize}
     </form>
-
+    <hr>
     <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="post_type" value="start_date_change">
         <input type="hidden" name="uuid" value="${user.uuid}">
         <input type="hidden" name="email" value="${user.email}">
-        <br>
         <select name="start_day">
             <option value="${user.startPeriodDate.dayOfMonth}" selected
                     hidden>${user.startPeriodDate.dayOfMonth}</option>
@@ -152,8 +152,11 @@
         <br>
         <button type="submit">Изменить начальную дату</button>
     </form>
-<hr>
+    <hr>
     Test data section
+    <br>
+    <a href="spending?action=refill">RefillDB</a>
+    ${maxSize}
     <br>
     <input value="${user.uuid}">
     <input value="${user.getStartPeriodDate()}">
