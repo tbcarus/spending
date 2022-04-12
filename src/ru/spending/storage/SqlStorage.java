@@ -42,7 +42,7 @@ public class SqlStorage implements Storage {
             ps.setString(2, p.getType().name());
             ps.setInt(3, p.getPrise());
             ps.setString(4, p.getDescription() == null ? "" : p.getDescription());
-            ps.setDate(5, java.sql.Date.valueOf(p.getDate()));
+            ps.setTimestamp(5, Timestamp.valueOf(p.getDate().atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setString(6, p.getUserID() == null ? "1" : p.getUserID());
             ps.execute();
 
@@ -85,7 +85,7 @@ public class SqlStorage implements Storage {
             ps.setString(1, p.getType().name());
             ps.setInt(2, p.getPrise());
             ps.setString(3, p.getDescription());
-            ps.setDate(4, java.sql.Date.valueOf(p.getDate()));
+            ps.setTimestamp(4, Timestamp.valueOf(p.getDate().atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setString(5, p.getUserID());
             ps.setString(6, p.getId());
             if (ps.executeUpdate() == 0) {
@@ -100,7 +100,7 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("UPDATE users SET name=?, password=?, start_period_date=? WHERE id=?", ps -> {
             ps.setString(1, user.getName());
             ps.setString(2, user.getPassword());
-            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atTime(0, 0, 0).format(DateUtil.DTFORMATTER)));
+            ps.setTimestamp(3, Timestamp.valueOf(user.getStartPeriodDate().atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setString(4, user.getUuid());
             if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException("User with uuid " + user.getUuid() + " not exist");
@@ -146,8 +146,8 @@ public class SqlStorage implements Storage {
     public Map<PaymentType, List<Payment>> getAllSortedByUser(String userID, LocalDate startDate, LocalDate endDate) {
         return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ?", ps -> {
             ps.setString(1, userID);
-            ps.setDate(2, Date.valueOf(startDate));
-            ps.setDate(3, Date.valueOf(endDate));
+            ps.setTimestamp(2, Timestamp.valueOf(startDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
+            ps.setTimestamp(3, Timestamp.valueOf(endDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
             ResultSet rs = ps.executeQuery();
             return getPaymentMap(rs);
         });
@@ -178,8 +178,7 @@ public class SqlStorage implements Storage {
         PaymentType paymentType = PaymentType.valueOf(rs.getString("type"));
         int prise = rs.getInt("prise");
         String description = rs.getString("description");
-        LocalDate date = null;
-        date = LocalDate.parse(rs.getString("date"));
+        LocalDate date = LocalDate.parse(rs.getString("date").split(" ")[0]);
         String userID = rs.getString("user_id").trim();
         return new Payment(paymentID, paymentType, prise, description, date, userID);
     }
