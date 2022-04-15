@@ -98,7 +98,7 @@
                             <jsp:useBean id="payment_record" class="ru.spending.model.Payment" scope="request"/>
                             <td align="center">
                                 <c:if test="${i < map.get(pt).size()}">
-                                    <a href="spending?uuid=${payment_record.id}&action=edit">${payment_record.prise}</a>
+                                    <a href="spending/edit?id=${payment_record.id}&action=edit">${payment_record.prise}</a>
                                 </c:if>
                             </td>
                             <c:if test="${pt == PaymentType.CAR || pt == PaymentType.ENTERTAINMENT ||
@@ -115,7 +115,7 @@
             </c:if>
 
         </table>
-        <a href="spending?action=create">Add new payment <img src="img/add.png"></a><br>
+        <a href="spending/edit?action=create">Add new payment <img src="img/add.png"></a><br>
         <input type="button" onclick="window.location.href = 'spending?view=toCurrentDate';"
                value="Показать записи до сегодняшней даты"/>
         <input type="button" onclick="window.location.href = 'spending?view=allTime';"

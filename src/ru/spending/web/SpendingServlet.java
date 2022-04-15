@@ -29,9 +29,9 @@ public class SpendingServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String uuid = request.getParameter("uuid");
-        String action = request.getParameter("action");
-        String view = request.getParameter("view");
+        String uuid = request.getParameter("uuid"); //ID пользователя
+        String action = request.getParameter("action"); // параметр выбор действия
+        String view = request.getParameter("view"); // параметр выбора период отображения трат
         User user = Users.getUserByEmail("l@og.in");
         request.setAttribute("user", user);
         if (action == null) {
@@ -64,19 +64,19 @@ public class SpendingServlet extends HttpServlet {
         }
         Payment p;
         switch (action) {
-            case "delete":
-                storage.delete(uuid);
-                response.sendRedirect("spending");
-                return;
-            case "create":
-                p = new Payment("new", LocalDate.now());
-                break;
+//            case "delete":
+//                storage.delete(uuid);
+//                response.sendRedirect("spending");
+//                return;
+//            case "create":
+//                p = new Payment("new", LocalDate.now());
+//                break;
             case "view":
                 p = storage.get(uuid);
                 break;
-            case "edit":
-                p = storage.get(uuid);
-                break;
+//            case "edit":
+//                p = storage.get(uuid);
+//                break;
             case "refill":
                 Config.getINSTANCE().refillDB();
                 response.sendRedirect("spending");
@@ -123,18 +123,18 @@ public class SpendingServlet extends HttpServlet {
                     }
                 }
                 break;
-            case "edit":
-                String uuid = request.getParameter("uuid");
-                PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
-                int prise = Integer.parseInt(request.getParameter("prise"));
-                String description = request.getParameter("description");
-                LocalDate date = LocalDate.parse(request.getParameter("date"));
-                if (uuid.equals("new")) {
-                    storage.save(new Payment(paymentType, prise, description, date, "1"));
-                } else {
-                    storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
-                }
-                break;
+//            case "edit":
+//                String uuid = request.getParameter("uuid");
+//                PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
+//                int prise = Integer.parseInt(request.getParameter("prise"));
+//                String description = request.getParameter("description");
+//                LocalDate date = LocalDate.parse(request.getParameter("date"));
+//                if (uuid.equals("new")) {
+//                    storage.save(new Payment(paymentType, prise, description, date, "1"));
+//                } else {
+//                    storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
+//                }
+//                break;
             case "start_date_change":
                 String userID = request.getParameter("uuid");
                 String  userEmail = request.getParameter("email");

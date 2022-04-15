@@ -21,4 +21,13 @@
         <servlet-name>settingsServlet</servlet-name>
         <url-pattern>/spending/settings</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>editServlet</servlet-name>
+        <servlet-class>ru.spending.web.EditServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editServlet</servlet-name>
+        <url-pattern>/spending/edit</url-pattern>
+    </servlet-mapping>
 </web-app>

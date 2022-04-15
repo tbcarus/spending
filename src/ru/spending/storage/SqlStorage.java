@@ -152,7 +152,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public Map<PaymentType, List<Payment>> getAllSorted(LocalDate startDate, LocalDate endDate) {
-        return sqlHelper.execute("SELECT * FROM costs", ps -> {
+        return sqlHelper.execute("SELECT * FROM costs ORDER BY date DESC", ps -> {
             ResultSet rs = ps.executeQuery();
             return getPaymentMap(rs);
         });
@@ -160,7 +160,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public Map<PaymentType, List<Payment>> getAllSortedByUser(String userID, LocalDate startDate, LocalDate endDate) {
-        return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ?", ps -> {
+        return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND date BETWEEN ? AND ? ORDER BY date DESC", ps -> {
             ps.setString(1, userID);
             ps.setTimestamp(2, Timestamp.valueOf(startDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setTimestamp(3, Timestamp.valueOf(endDate.atStartOfDay().format(DateUtil.DTFORMATTER)));

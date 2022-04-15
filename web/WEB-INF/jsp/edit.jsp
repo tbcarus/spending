@@ -14,15 +14,15 @@
 <body>
 <%--<jsp:include page="fragments/header.jsp"/>--%>
 <section>
-    <form method="post" action="spending" enctype="application/x-www-form-urlencoded">
+    <form method="post" action="edit" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="post_type" value="edit">
-        <input type="hidden" name="uuid" value="${payment.id}">
+        <input type="hidden" name="id" value="${payment.id}">
         <table border="1">
             <c:if test="${!payment.id.equals('new')}">
                 <tr>
                     <td colspan="2" align="center">
-                        <a href="spending?uuid=${payment.id}&action=delete">
-                            <img src="img/delete.png">Удалить запись<img src="img/delete.png">
+                        <a href="edit?id=${payment.id}&action=delete">
+                            <img src="../img/delete.png">Удалить запись<img src="../img/delete.png">
                         </a>
                     </td>
                 </tr>
@@ -75,7 +75,7 @@
         <hr>
         <button type="submit">Сохранить</button>
         <input type="button" value=" Отменить " onclick="history.go(-1);"/>
-        <input type="button" value="Удалить запись" onclick=""/>
+        <input type="button" value="Удалить запись" onclick="window.location.href = 'edit?id=${payment.id}&action=delete'"/>
     </form>
 </section>
 <%--<jsp:include page="fragments/footer.jsp"/>--%>
