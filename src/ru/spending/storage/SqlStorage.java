@@ -64,7 +64,7 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public User getUser(String email) {
+    public User getUserByEmail(String email) {
         return sqlHelper.execute("SELECT * FROM users WHERE email=?", ps -> {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -72,6 +72,22 @@ public class SqlStorage implements Storage {
                 throw new NotExistStorageException("User with email " + email + "not exist");
             }
             String id = rs.getString("id").trim();
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            LocalDate startDatePeriod = LocalDate.parse(rs.getString("start_period_date").split(" ")[0]);
+            return new User(id, name, email, password, startDatePeriod);
+        });
+    }
+
+    @Override
+    public User getUserById(String id) {
+        return sqlHelper.execute("SELECT * FROM users WHERE id=?", ps -> {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new NotExistStorageException("User with email " + id + "not exist");
+            }
+            String email = rs.getString("email").trim();
             String name = rs.getString("name");
             String password = rs.getString("password");
             LocalDate startDatePeriod = LocalDate.parse(rs.getString("start_period_date").split(" ")[0]);

@@ -32,7 +32,8 @@ public class SpendingServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         String view = request.getParameter("view");
-        User user = Users.getUser("l@og.in");
+        User user = Users.getUserByEmail("l@og.in");
+        request.setAttribute("user", user);
         if (action == null) {
             Map<PaymentType, List<Payment>> allSorted;
             if (view == null) {
@@ -53,7 +54,6 @@ public class SpendingServlet extends HttpServlet {
                     break;
             }
             int maxSize = maxSize(allSorted);
-            request.setAttribute("user", user);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
             Map<PaymentType, Integer> sumMapByType = getSumMapByType(allSorted);
@@ -77,9 +77,6 @@ public class SpendingServlet extends HttpServlet {
             case "edit":
                 p = storage.get(uuid);
                 break;
-            case "settings":
-                request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp").forward(request, response);
-                return;
             case "refill":
                 Config.getINSTANCE().refillDB();
                 response.sendRedirect("spending");
@@ -144,7 +141,7 @@ public class SpendingServlet extends HttpServlet {
                 int startDay = Integer.parseInt(request.getParameter("start_day"));
                 int startMonth = Integer.parseInt(request.getParameter("start_month"));
                 int startYear = Integer.parseInt(request.getParameter("start_year"));
-                User user = Users.getUser(userEmail);
+                User user = Users.getUserByEmail(userEmail);
                 user.setStartPeriodDate(LocalDate.of(startYear, startMonth, startDay));
                 storage.updateUser(user);
                 break;

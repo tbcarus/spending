@@ -32,7 +32,7 @@
                 </td>
                 <td colspan="2" align="right">
                     <c:set var="user" value="${user}"/>
-                    <b><a href="spending?uuid=${user.uuid}&action=settings">${user.name}</a></b>
+                    <b><a href="spending/settings?uuid=${user.uuid}">${user.name}</a></b>
                 </td>
             </tr>
             <c:set var="map" value="${map}"/>

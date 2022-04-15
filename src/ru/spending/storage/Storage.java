@@ -40,7 +40,9 @@ public interface Storage {
 //    int getSumAll(String userID, LocalDate startDate, LocalDate endDate);
 
     //User
-    User getUser(String email);
+    User getUserByEmail(String email);
+
+    User getUserById(String id);
 
     void updateUser(User user);
 }

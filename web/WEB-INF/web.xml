@@ -12,4 +12,13 @@
         <servlet-name>spendingServlet</servlet-name>
         <url-pattern>/spending</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>settingsServlet</servlet-name>
+        <servlet-class>ru.spending.web.SettingsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>settingsServlet</servlet-name>
+        <url-pattern>/spending/settings</url-pattern>
+    </servlet-mapping>
 </web-app>
