@@ -12,7 +12,7 @@ public enum PaymentType {
     CHILDREN("Дети"),
     OTHER("Прочее");
 
-    private String title;
+    private final String title;
 
     PaymentType(String title) {
         this.title = title;

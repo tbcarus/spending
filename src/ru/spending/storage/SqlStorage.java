@@ -170,18 +170,20 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public List<Payment> getAllByType(PaymentType paymentType) {
-        return sqlHelper.execute("SELECT * FROM costs WHERE type = ?", ps -> {
-            ps.setString(1, paymentType.name());
+    public List<Payment> getAllByType(PaymentType paymentType, String userId) {
+        return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND type = ?", ps -> {
+            ps.setString(1, userId);
+            ps.setString(2, paymentType.name());
             ResultSet rs = ps.executeQuery();
             return getPaymentList(rs);
         });
     }
 
     @Override
-    public int getSumType(PaymentType paymentType) {
-        return sqlHelper.execute("SELECT SUM(prise) FROM costs WHERE type = ?", ps -> {
-            ps.setString(1, paymentType.name());
+    public int getSumType(PaymentType paymentType, String userId) {
+        return sqlHelper.execute("SELECT SUM(prise) FROM costs WHERE user_id = ? AND type = ?", ps -> {
+            ps.setString(1, userId);
+            ps.setString(2, paymentType.name());
             ResultSet rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);

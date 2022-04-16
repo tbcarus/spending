@@ -9,6 +9,7 @@ public class DateUtil {
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     public static final DateTimeFormatter DTFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
     public static final DateTimeFormatter DTFORMATTER_DATE_ONLY = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter DTFORMATTER_DATE_ONLY_RU = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     public static final LocalDateTime ALL_TIME_START = LocalDateTime.of(1900, 1, 1, 0, 0, 0);
     public static final LocalDateTime NOW = LocalDateTime.now();
 

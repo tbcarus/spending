@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="ru.spending.model.PaymentType" %>
-<%@ page import="ru.spending.model.User" %>
 <%@ page import="ru.spending.util.DateUtil" %>
 <%@ page import="java.time.Month" %>
 <%@ page import="java.time.Year" %>
@@ -57,7 +56,7 @@
                         <jsp:useBean id="pt1" type="ru.spending.model.PaymentType"/>
                         <c:choose>
                             <c:when test="${i == 0}">
-                                <th>${pt1.title}</th>
+                                <th><a href="spending/typedList?type=${pt1.name()}&email=${user.email}">${pt1.title}</a></th>
                                 <c:if test="${pt1 == PaymentType.CAR || pt1 == PaymentType.ENTERTAINMENT ||
                                                                     pt1 == PaymentType.CHILDREN || pt1 == PaymentType.OTHER}">
                                     <th>Описание</th>

@@ -30,4 +30,13 @@
         <servlet-name>editServlet</servlet-name>
         <url-pattern>/spending/edit</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>typedListServlet</servlet-name>
+        <servlet-class>ru.spending.web.typedListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>typedListServlet</servlet-name>
+        <url-pattern>/spending/typedList</url-pattern>
+    </servlet-mapping>
 </web-app>

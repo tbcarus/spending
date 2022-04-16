@@ -101,13 +101,13 @@ public class SqlStorageTest {
 
     @Test
     public void getAllByType() {
-        List<Payment> list = storage.getAllByType(PaymentType.GAS);
+        List<Payment> list = storage.getAllByType(PaymentType.GAS, "1");
         assertEquals(3, list.size());
     }
 
     @Test
     public void getSumType() {
-        assertEquals(8500, storage.getSumType(PaymentType.GAS));
+        assertEquals(8500, storage.getSumType(PaymentType.GAS, "1"));
     }
 
     public void assertGet(Payment p) {

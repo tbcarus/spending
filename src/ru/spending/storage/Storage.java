@@ -27,9 +27,9 @@ public interface Storage {
 
     Map<PaymentType, List<Payment>> getAllSortedByUser(String userID, LocalDate startDate, LocalDate endDate);
 
-    List<Payment> getAllByType(PaymentType paymentType);
+    List<Payment> getAllByType(PaymentType paymentType, String userId);
 
-    int getSumType(PaymentType paymentType);
+    int getSumType(PaymentType paymentType, String userId);
 
 //    Map<PaymentType, Integer> getSumMapByType(LocalDate startDate, LocalDate endDate);
 //
