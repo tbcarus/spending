@@ -36,7 +36,7 @@ public class typedListServlet extends HttpServlet {
             response.sendRedirect("typedList?type="+pt.name()+"&email="+user.getEmail());
             return;
         }
-        List<Payment> list = storage.getAllByType(pt, user.getUuid());
+        List<Payment> list = storage.getAllByType(pt, user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
         int sum = 0;
         for (Payment p : list) {
             sum += p.getPrise();

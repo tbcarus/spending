@@ -101,7 +101,7 @@ public class SqlStorageTest {
 
     @Test
     public void getAllByType() {
-        List<Payment> list = storage.getAllByType(PaymentType.GAS, "1");
+        List<Payment> list = storage.getAllByType(PaymentType.GAS, "1", DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
         assertEquals(3, list.size());
     }
 
