@@ -174,8 +174,8 @@ public class SqlStorage implements Storage {
         return sqlHelper.execute("SELECT * FROM costs WHERE user_id = ? AND type = ? AND date BETWEEN ? AND ? ORDER BY date DESC", ps -> {
             ps.setString(1, userId);
             ps.setString(2, paymentType.name());
-            ps.setTimestamp(2, Timestamp.valueOf(startDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
-            ps.setTimestamp(3, Timestamp.valueOf(endDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
+            ps.setTimestamp(3, Timestamp.valueOf(startDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
+            ps.setTimestamp(4, Timestamp.valueOf(endDate.atStartOfDay().format(DateUtil.DTFORMATTER)));
             ResultSet rs = ps.executeQuery();
             return getPaymentList(rs);
         });

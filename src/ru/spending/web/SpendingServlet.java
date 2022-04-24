@@ -7,6 +7,7 @@ import ru.spending.model.Users;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
+import ru.spending.util.UtilsClass;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,30 +54,20 @@ public class SpendingServlet extends HttpServlet {
                     allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
                     break;
             }
-            int maxSize = maxSize(allSorted);
+            int maxSize = UtilsClass.maxSize(allSorted);
             request.setAttribute("map", allSorted);
             request.setAttribute("maxSize", maxSize);
-            Map<PaymentType, Integer> sumMapByType = getSumMapByType(allSorted);
+            Map<PaymentType, Integer> sumMapByType = UtilsClass.getSumMapByType(allSorted);
             request.setAttribute("sumMapByType", sumMapByType);
-            request.setAttribute("sumAll", getSumAll(sumMapByType));
+            request.setAttribute("sumAll", UtilsClass.getSumAll(sumMapByType));
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
         Payment p;
         switch (action) {
-//            case "delete":
-//                storage.delete(uuid);
-//                response.sendRedirect("spending");
-//                return;
-//            case "create":
-//                p = new Payment("new", LocalDate.now());
-//                break;
             case "view":
                 p = storage.get(uuid);
                 break;
-//            case "edit":
-//                p = storage.get(uuid);
-//                break;
             case "refill":
                 Config.getINSTANCE().refillDB();
                 response.sendRedirect("spending");
@@ -123,18 +114,6 @@ public class SpendingServlet extends HttpServlet {
                     }
                 }
                 break;
-//            case "edit":
-//                String uuid = request.getParameter("uuid");
-//                PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
-//                int prise = Integer.parseInt(request.getParameter("prise"));
-//                String description = request.getParameter("description");
-//                LocalDate date = LocalDate.parse(request.getParameter("date"));
-//                if (uuid.equals("new")) {
-//                    storage.save(new Payment(paymentType, prise, description, date, "1"));
-//                } else {
-//                    storage.update(new Payment(uuid, paymentType, prise, description, date, "1"));
-//                }
-//                break;
             case "start_date_change":
                 String userID = request.getParameter("uuid");
                 String  userEmail = request.getParameter("email");
@@ -148,39 +127,4 @@ public class SpendingServlet extends HttpServlet {
         }
         response.sendRedirect("spending");
     }
-
-    private int maxSize(Map<PaymentType, List<Payment>> map) {
-        int max = 0;
-        for (PaymentType pt : map.keySet()) {
-            if (max < map.get(pt).size()) {
-                max = map.get(pt).size();
-            }
-        }
-        return max;
-    }
-
-    private int getSumByType(List<Payment> list) {
-        int sum = 0;
-        for (Payment p : list) {
-            sum += p.getPrise();
-        }
-        return sum;
-    }
-
-    private Map<PaymentType, Integer> getSumMapByType(Map<PaymentType, List<Payment>> map) {
-        Map<PaymentType, Integer> sumMap = new HashMap<>();
-        for (PaymentType pt : map.keySet()) {
-            sumMap.put(pt, getSumByType(map.get(pt)));
-        }
-        return sumMap;
-    }
-
-    private int getSumAll(Map<PaymentType, Integer> map) {
-        int sum = 0;
-        for (PaymentType pt : map.keySet()) {
-            sum += map.get(pt);
-        }
-        return sum;
-    }
-
 }

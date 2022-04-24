@@ -91,8 +91,7 @@
                                     <th class="w3-"><a
                                             href="spending/typedList?type=${pt1.name()}&email=${user.email}">${pt1.title}</a>
                                     </th>
-                                    <c:if test="${pt1 == PaymentType.CAR || pt1 == PaymentType.ENTERTAINMENT ||
-                                                                    pt1 == PaymentType.CHILDREN || pt1 == PaymentType.OTHER}">
+                                    <c:if test="${pt1.isDescriptionOutput()}">
                                         <th>Описание</th>
                                     </c:if>
                                 </c:when>
@@ -114,8 +113,7 @@
                                         <input type="text" name="${pt1.name()}"
                                                class="w3-input w3-border w3-round-large" style="width: 70px">
                                     </td>
-                                    <c:if test="${pt1 == PaymentType.CAR || pt1 == PaymentType.ENTERTAINMENT ||
-                                                                    pt1 == PaymentType.CHILDREN || pt1 == PaymentType.OTHER}">
+                                    <c:if test="${pt1.isDescriptionOutput()}">
                                         <td class="w3-pale-green">
                                             <input type="text" name="${pt1.name()}description"
                                                    class="w3-input w3-border w3-round-large" style="width: 120px">
@@ -143,8 +141,7 @@
                                                class="w3-button w3-amber w3-hover-light-green w3-round-large"/>
                                     </c:if>
                                 </td>
-                                <c:if test="${pt == PaymentType.CAR || pt == PaymentType.ENTERTAINMENT ||
-                            pt == PaymentType.CHILDREN || pt == PaymentType.OTHER}">
+                                <c:if test="${pt.isDescriptionOutput()}">
                                     <td style="vertical-align: middle" class="w3-container">
                                         <c:if test="${i < map.get(pt).size()}">
                                             ${map.get(pt)[i].description}
