@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -35,6 +36,10 @@ public class SettingsServlet extends HttpServlet {
         String userId = request.getParameter("uuid");
         User user = storage.getUserById(userId);
         request.setAttribute("user", user);
+        request.setAttribute("isRightDir", ToXls.isRightDir(ToXls.DESKTOP_DIR));
+        if (ToXls.isRightDir(ToXls.DESKTOP_DIR)) {
+            request.setAttribute("dirOut", ToXls.DESKTOP_DIR.getAbsolutePath());
+        }
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp");
         requestDispatcher.forward(request, response);
     }
@@ -62,18 +67,18 @@ public class SettingsServlet extends HttpServlet {
                 storage.updateUser(user);
                 break;
             case "export":
-                Path path = Path.of("C:\\projects\\spending\\storage\\Test.xlsx");
-                String file = request.getParameter("chosen_file");
+                String dir = request.getParameter("dir_path");
                 int periodDay = user.getStartPeriodDate().getDayOfMonth();
                 int periodMonth = Integer.parseInt(request.getParameter("period_month"));
                 int periodYear = Integer.parseInt(request.getParameter("period_year"));
                 LocalDate periodStart = LocalDate.of(periodYear, periodMonth, periodDay);
                 Map<PaymentType, List<Payment>> allSorted = storage.getAllSortedByUser(user.getUuid(), periodStart, periodStart.plusMonths(1));
-                ToXls.write(allSorted, periodStart);
-
+                if (ToXls.isRightDir(new File(dir))) {
+                    ToXls.write(allSorted, periodStart, new File(dir));
+                }
                 break;
         }
 
-        response.sendRedirect("../spending/settings?uuid="+uuid);
+        response.sendRedirect("../spending/settings?uuid=" + uuid);
     }
 }

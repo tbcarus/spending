@@ -1,17 +1,14 @@
 package ru.spending.util;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.*;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -19,15 +16,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.spending.model.PaymentType.*;
+import static ru.spending.model.PaymentType.values;
 
 public class ToXls {
-    public static void write(Map<PaymentType, List<Payment>> allSorted, LocalDate periodStart) {
+    public static final File DESKTOP_DIR = new File(System.getProperty("user.home") + "\\Desktop1");
+
+    public static boolean isRightDir(File outDir) {
+        return outDir.exists() && outDir.canWrite() && outDir.canRead() && outDir.isDirectory();
+    }
+
+    public static void write(Map<PaymentType, List<Payment>> allSorted, LocalDate periodStart, File dir) {
         XSSFWorkbook book = new XSSFWorkbook();
 
         StringBuilder bookName = new StringBuilder();
-        bookName.append(periodStart.getDayOfMonth() + " ");
-        bookName.append(periodStart.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()) + " ");
+        bookName.append(periodStart.getDayOfMonth()).append(" ");
+        bookName.append(periodStart.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
         bookName.append(periodStart.format(DateTimeFormatter.ofPattern("yy")));
         XSSFSheet sheet = book.createSheet(bookName.toString());
 
@@ -35,13 +38,11 @@ public class ToXls {
         writeSumLine(allSorted, sheet);
         writeSpending(allSorted, sheet);
 
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(Path.of("C:\\projects\\spending\\storage\\Test.xlsx").toFile());
+        File fout = new File(dir, bookName + ".xlsx");
+
+        try (FileOutputStream outputStream = new FileOutputStream(fout)) {
             book.write(outputStream);
             book.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,7 +84,6 @@ public class ToXls {
 
     private static void writeSumLine(Map<PaymentType, List<Payment>> allSorted, XSSFSheet sheet) {
         Map<PaymentType, Integer> sumByType = UtilsClass.getSumMapByType(allSorted);
-//        int sum = UtilsClass.getSumAll(sumByType);
         XSSFRow sumRow = sheet.createRow(3);
         XSSFCell sumCell = sumRow.createCell(0);
 
