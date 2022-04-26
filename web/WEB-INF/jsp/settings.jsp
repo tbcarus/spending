@@ -4,6 +4,9 @@
 <%@ page import="java.time.Month" %>
 <%@ page import="java.time.Year" %>
 <%@ page import="java.io.File" %>
+<%@ page import="java.time.format.TextStyle" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Locale.Category" %>
 
 <html>
 <head>
@@ -128,9 +131,9 @@
                     ${user.startPeriodDate.dayOfMonth}
                     <select name="period_month">
                         <option value="${user.startPeriodDate.minusMonths(1).month.value}" selected
-                                hidden>${user.startPeriodDate.minusMonths(1).month.name()}</option>
+                                hidden>${user.startPeriodDate.minusMonths(1).month.getDisplayName(TextStyle.FULL, Locale.getDefault())}</option>
                         <c:forEach var="i" begin="1" end="12">
-                            <option value="${i}">${Month.of(i).name()}</option>
+                            <option value="${i}">${Month.of(i).getDisplayName(TextStyle.FULL, Locale.getDefault())}</option>
                         </c:forEach>
                     </select>
                     <select name="period_year">
