@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -53,16 +54,28 @@ public class EditServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String paymentId = request.getParameter("id");
-        PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
-        int prise = Integer.parseInt(request.getParameter("prise"));
-        String description = request.getParameter("description");
-        LocalDate date = LocalDate.parse(request.getParameter("date"));
-        if (paymentId.equals("new")) {
-            storage.save(new Payment(paymentType, prise, description, date, "1"));
-        } else {
-            storage.update(new Payment(paymentId, paymentType, prise, description, date, "1"));
+        try {
+            PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
+            int prise = Integer.parseInt(request.getParameter("prise"));
+            if (prise == 0) {
+                throw new IllegalArgumentException();
+            }
+            String description = request.getParameter("description");
+            LocalDate date = LocalDate.parse(request.getParameter("date"));
+            if (paymentId.equals("new")) {
+                storage.save(new Payment(paymentType, prise, description, date, "1"));
+            } else {
+                storage.update(new Payment(paymentId, paymentType, prise, description, date, "1"));
+            }
+        } catch (IllegalArgumentException exc) {
+            if (paymentId.equals("new")) {
+                response.sendRedirect("edit?action=create");
+                return;
+            } else {
+                response.sendRedirect("edit?id="+paymentId+"&action=edit");
+                return;
+            }
         }
-
         response.sendRedirect("../spending");
     }
 }

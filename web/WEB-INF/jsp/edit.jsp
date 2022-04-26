@@ -81,7 +81,7 @@
                         <button type="submit"
                                 class="w3-button w3-light-green w3-hover-amber w3-round-large">Сохранить
                         </button>
-                        <input type="button" value=" Отменить " onclick="history.go(-1)"
+                        <input type="button" value=" Отменить " onclick="window.location.href='../spending'"
                                class="w3-button w3-light-green w3-hover-amber w3-round-large">
                         <%--                    <c:if test="${!payment.id.equals('new')}">--%>
                         <%--                    <input type="button" value="Удалить запись"--%>
