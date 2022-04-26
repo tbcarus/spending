@@ -2,11 +2,8 @@ package ru.spending.web;
 
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
-import ru.spending.model.User;
-import ru.spending.model.Users;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
-import ru.spending.util.DateUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,9 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class EditServlet extends HttpServlet {
     private final static SqlStorage storage = Config.getINSTANCE().getSqlStorage();

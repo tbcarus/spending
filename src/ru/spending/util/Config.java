@@ -47,8 +47,6 @@ public class Config {
                 sb.append(str);
             }
             sqlStorage.sqlHelper.execute(sb.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

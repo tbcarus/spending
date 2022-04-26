@@ -10,7 +10,6 @@ public class User {
     private String email;
     private String password;
     private LocalDate startPeriodDate;
-    private LocalDate endPeriodDate;
 
     public User() {
     }

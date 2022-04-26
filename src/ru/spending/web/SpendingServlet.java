@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,22 +62,22 @@ public class SpendingServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
-        Payment p;
-        switch (action) {
-            case "view":
-                p = storage.get(uuid);
-                break;
-            case "refill":
-                Config.getINSTANCE().refillDB();
-                response.sendRedirect("spending");
-                return;
-            default:
-                throw new IllegalArgumentException("Action " + action + " is not recognized");
-        }
-        request.setAttribute("payment", p);
-        request.getRequestDispatcher(
-                "view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp"
-        ).forward(request, response);
+//        Payment p;
+//        switch (action) {
+//            case "view":
+//                p = storage.get(uuid);
+//                break;
+//            case "refill":
+//                Config.getINSTANCE().refillDB();
+//                response.sendRedirect("spending");
+//                return;
+//            default:
+//                throw new IllegalArgumentException("Action " + action + " is not recognized");
+//        }
+//        request.setAttribute("payment", p);
+//        request.getRequestDispatcher(
+//                "view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp"
+//        ).forward(request, response);
     }
 
     @Override
