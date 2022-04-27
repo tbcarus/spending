@@ -3,19 +3,18 @@ package ru.spending.util;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.storage.SqlStorage;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Properties;
 
+// Утильный конфигурационный класс. Так же служит для наполнения тестовыми данными БД.
 public class Config {
     private static final Config INSTANCE = new Config();
     private final SqlStorage sqlStorage;
     private final String homeDir = "C:\\projects\\spending";
     File PROPS = new File(homeDir, "config\\spending.properties");
     File POPULATE = new File(homeDir, "config\\populate.sql");
-//    private static final String PROPS = "/spending.properties";
 
     public static Config getINSTANCE() {
         return INSTANCE;
@@ -23,7 +22,6 @@ public class Config {
 
     private Config() {
         try (InputStream is = new FileInputStream(PROPS)) {
-//        try (InputStream is = Config.class.getResourceAsStream(PROPS)) {
             Properties prop = new Properties();
             prop.load(is);
             String url = prop.getProperty("db.url");
@@ -39,6 +37,7 @@ public class Config {
         return sqlStorage;
     }
 
+    // Метод для наполнения базы тестовыми данными из файла
     public void refillDB() {
         try (BufferedReader br = new BufferedReader(new FileReader(POPULATE, StandardCharsets.UTF_8))) {
             String str;

@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.xssf.usermodel.*;
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
-
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,29 +15,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.spending.model.PaymentType.values;
-
+// Утильный класс для экспорта данных за выбранный период в файл эксель. Каждый раз содаётся новый файл с новой книгой.
+// Файл ранее вёлся на компьютере вручную, поэтому создаётся похожая структура ранее существующего файла
+// из-за чего организация вывода выглядит немного запутанной.
+// Экспорт производится по умолчанию на рабочий стол. Если он не доступен, то предлагается указать путь вручную.
 public class ToXls {
-    public static final File DESKTOP_DIR = new File(System.getProperty("user.home") + "\\Desktop1");
+    public static final File DESKTOP_DIR = new File(System.getProperty("user.home") + "\\Desktop");
 
     public static boolean isRightDir(File outDir) {
+        // Проверка, что это папка, она существует, доступна для чтения и записи.
         return outDir.exists() && outDir.canWrite() && outDir.canRead() && outDir.isDirectory();
     }
 
+    // Метод для записи мапы трат
     public static void write(Map<PaymentType, List<Payment>> allSorted, LocalDate periodStart, File dir) {
-        XSSFWorkbook book = new XSSFWorkbook();
+        XSSFWorkbook book = new XSSFWorkbook(); // Создание новой книги
 
-        StringBuilder bookName = new StringBuilder();
+        StringBuilder bookName = new StringBuilder(); // Форматирование структуры названия книги
         bookName.append(periodStart.getDayOfMonth()).append(" ");
         bookName.append(periodStart.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
         bookName.append(periodStart.format(DateTimeFormatter.ofPattern("yy")));
-        XSSFSheet sheet = book.createSheet(bookName.toString());
+        XSSFSheet sheet = book.createSheet(bookName.toString()); // Создание листа книги
 
-        writeHeaderLine(sheet);
-        writeSumLine(allSorted, sheet);
-        writeSpending(allSorted, sheet);
+        writeHeaderLine(sheet); // Запись шапки таблицы
+        writeSumLine(allSorted, sheet); // Запись строки с суммой трат
+        writeSpending(allSorted, sheet); // Запись данных трат в таблицу
 
-        File fout = new File(dir, bookName + ".xlsx");
+        File fout = new File(dir, bookName + ".xlsx"); // Выходной файл
 
         try (FileOutputStream outputStream = new FileOutputStream(fout)) {
             book.write(outputStream);
@@ -49,13 +52,14 @@ public class ToXls {
     }
 
     private static void writeHeaderLine(XSSFSheet sheet) {
-        XSSFRow headerRow = sheet.createRow(2);
+        XSSFRow headerRow = sheet.createRow(2); // Создание строки
         int count = 1;
-        for (PaymentType pt : values()) {
-            XSSFCell headerCell = headerRow.createCell(count);
+        for (PaymentType pt : PaymentType.values()) {
+            XSSFCell headerCell = headerRow.createCell(count); // Создание ячейки
             headerCell.setCellValue(pt.getTitle());
 
             switch (pt) {
+                // Установка ширины колонок
                 case CAR:
                     sheet.setColumnWidth(count, 18*256);
                     break;
@@ -74,6 +78,7 @@ public class ToXls {
                 count++;
             }
             if (pt.isDescriptionOutput()) {
+                // Вывод описания траты, если этот признак установлен для данного типа траты
                 XSSFCell headerCellDescription = headerRow.createCell(++count);
                 headerCellDescription.setCellValue("Примечание");
                 sheet.setColumnWidth(count, 12*256);
@@ -87,18 +92,18 @@ public class ToXls {
         XSSFRow sumRow = sheet.createRow(3);
         XSSFCell sumCell = sumRow.createCell(0);
 
-        XSSFCellStyle style = sumCell.getSheet().getWorkbook().createCellStyle();
-        style.setFillForegroundColor(new XSSFColor(new Color(22,54,92), null));
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        XSSFFont font = sumCell.getSheet().getWorkbook().createFont();
-        font.setBold(true);
-        font.setColor(new XSSFColor(new Color(255,255,255), null));
-        style.setFont(font);
-        sumCell.setCellStyle(style);
-        sumCell.setCellFormula("SUM(B4:O4)");
+        XSSFCellStyle style = sumCell.getSheet().getWorkbook().createCellStyle(); // Редактирование стиля ячейки
+        style.setFillForegroundColor(new XSSFColor(new Color(22,54,92), null)); // Установка цвета ячейки
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND); // Установка стиля заполнения ячейки - заполнение цветом полностью
+        XSSFFont font = sumCell.getSheet().getWorkbook().createFont(); // Редактирование стиля шрифта ячейки
+        font.setBold(true); // Жирный шрифт
+        font.setColor(new XSSFColor(new Color(255,255,255), null)); // Установка цвета шрифта
+        style.setFont(font); // Установка шрифта стилю ячейки
+        sumCell.setCellStyle(style); // Установка ячейке изменённого стиля
+        sumCell.setCellFormula("SUM(B4:O4)"); // Запись формулы в ячейку
 
         int count = 1;
-        for (PaymentType pt : values()) {
+        for (PaymentType pt : PaymentType.values()) {
             sumCell = sumRow.createCell(count);
 
             style = sumCell.getSheet().getWorkbook().createCellStyle();
@@ -129,7 +134,7 @@ public class ToXls {
         for (int i = deltaRow; i < maxSize + deltaRow; i++) {
             XSSFRow row = sheet.createRow(i);
             int count = 1;
-            for (PaymentType pt : values()) {
+            for (PaymentType pt : PaymentType.values()) {
                 if (allSorted.get(pt).size() > i - deltaRow) {
                     XSSFCell cell = row.createCell(count);
                     cell.setCellValue(allSorted.get(pt).get(i - deltaRow).getPrise());

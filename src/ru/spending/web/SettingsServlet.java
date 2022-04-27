@@ -8,7 +8,6 @@ import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
 import ru.spending.util.ToXls;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+// Сервлет для обработки настроек пользователя
+// Так же здесь можно экспортировать данные в файл эксель
 public class SettingsServlet extends HttpServlet {
     private final static SqlStorage storage = Config.getINSTANCE().getSqlStorage();
 
@@ -33,9 +34,12 @@ public class SettingsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userId = request.getParameter("uuid");
         User user = storage.getUserById(userId);
+        // Передача юзера в jsp
         request.setAttribute("user", user);
+        // Передача информации о доступности сохранения файла на рабочем столе
         request.setAttribute("isRightDir", ToXls.isRightDir(ToXls.DESKTOP_DIR));
         if (ToXls.isRightDir(ToXls.DESKTOP_DIR)) {
+            // Если рабочий стол доступен для записи, то передаётся его адрес
             request.setAttribute("dirOut", ToXls.DESKTOP_DIR.getAbsolutePath());
         }
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp");
@@ -50,6 +54,7 @@ public class SettingsServlet extends HttpServlet {
         User user = Users.getUserByEmail(email);
         String postType = request.getParameter("post_type");
         switch (postType) {
+            // Выбор обновления данных пользователя или экспорт данных в эксель
             case "update":
                 user.setName(request.getParameter("name"));
                 LocalDate startPeriod = DateUtil.getStartPeriod(Integer.parseInt(request.getParameter("start_day")));
@@ -61,7 +66,8 @@ public class SettingsServlet extends HttpServlet {
                     }
                 }
                 storage.updateUser(user);
-                break;
+                response.sendRedirect("../spending");
+                return;
             case "export":
                 String dir = request.getParameter("dir_path");
                 int periodDay = user.getStartPeriodDate().getDayOfMonth();
@@ -70,11 +76,14 @@ public class SettingsServlet extends HttpServlet {
                 LocalDate periodStart = LocalDate.of(periodYear, periodMonth, periodDay);
                 Map<PaymentType, List<Payment>> allSorted = storage.getAllSortedByUser(user.getUuid(), periodStart, periodStart.plusMonths(1));
                 if (ToXls.isRightDir(new File(dir))) {
+                    // Если папка доступна, то запись файла и редирект на основную таблицу
                     ToXls.write(allSorted, periodStart, new File(dir));
+                    response.sendRedirect("../spending");
+                    return;
                 }
                 break;
         }
-
+        // Если
         response.sendRedirect("../spending/settings?uuid=" + uuid);
     }
 }

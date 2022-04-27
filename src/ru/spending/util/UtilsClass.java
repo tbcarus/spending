@@ -2,13 +2,14 @@ package ru.spending.util;
 
 import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Утильный класс
 public class UtilsClass {
 
+    // Максимальный размер листа в мапе с листами
     public static int maxSize(Map<PaymentType, List<Payment>> map) {
         int max = 0;
         for (PaymentType pt : map.keySet()) {
@@ -19,6 +20,7 @@ public class UtilsClass {
         return max;
     }
 
+    // Подсчёт суммы трат в листе
     public static int getSumByType(List<Payment> list) {
         int sum = 0;
         for (Payment p : list) {
@@ -27,6 +29,7 @@ public class UtilsClass {
         return sum;
     }
 
+    // Подсчёт сумм трат по типам в мапе
     public static Map<PaymentType, Integer> getSumMapByType(Map<PaymentType, List<Payment>> map) {
         Map<PaymentType, Integer> sumMap = new HashMap<>();
         for (PaymentType pt : map.keySet()) {
@@ -35,6 +38,7 @@ public class UtilsClass {
         return sumMap;
     }
 
+    // Подсчёт общей суммы трат в мапе
     public static int getSumAll(Map<PaymentType, Integer> map) {
         int sum = 0;
         for (PaymentType pt : map.keySet()) {

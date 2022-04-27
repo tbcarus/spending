@@ -4,12 +4,13 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.util.UUID;
 
+// Класс пользователя
 public class User {
     private String uuid;
     private String name;
     private String email;
     private String password;
-    private LocalDate startPeriodDate;
+    private LocalDate startPeriodDate; // Дата начала периода учёта трат
 
     public User() {
     }
@@ -46,6 +47,7 @@ public class User {
         return startPeriodDate;
     }
 
+    // Дата окончания периода учёта трат. Период в программе принят равным 1 месяц с начала периода
     public LocalDate getEndPeriodDate() {
         return startPeriodDate.plusMonths(1);
     }

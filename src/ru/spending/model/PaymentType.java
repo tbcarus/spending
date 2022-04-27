@@ -13,7 +13,7 @@ public enum PaymentType {
     OTHER("Прочее", true);
 
     private final String title;
-    private final boolean descriptionOutput;
+    private final boolean descriptionOutput; // Признак вывода описания траты на странице или при экспорте данных в существующую структуру файла эксель
 
     PaymentType(String title, boolean b) {
         this.title = title;

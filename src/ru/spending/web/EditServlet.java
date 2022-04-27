@@ -4,7 +4,6 @@ import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +26,9 @@ public class EditServlet extends HttpServlet {
         String action = request.getParameter("action");
         Payment p = null;
         switch (action) {
+            // Тип действия: удалить, редактировать или создать новую запись траты
             case "delete":
+                // Удаление записи в БД и переход на страницу с тратами
                 storage.delete(paymentId);
                 response.sendRedirect("../spending");
                 return;
@@ -50,19 +51,24 @@ public class EditServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String paymentId = request.getParameter("id");
         try {
+            // Если тип траты не заполнен, то произойдёт исключение, обработанное в catch
             PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
+            // Если сумма траты не число, то произойдёт исключение, обработанное в catch
             int prise = Integer.parseInt(request.getParameter("prise"));
             if (prise == 0) {
+                // Если трата нулевая, то это считается ошибкой
                 throw new IllegalArgumentException();
             }
             String description = request.getParameter("description");
             LocalDate date = LocalDate.parse(request.getParameter("date"));
             if (paymentId.equals("new")) {
+                // ID траты new является признаком того, что такой траты в БД ещё не существует
                 storage.save(new Payment(paymentType, prise, description, date, "1"));
             } else {
                 storage.update(new Payment(paymentId, paymentType, prise, description, date, "1"));
             }
         } catch (IllegalArgumentException exc) {
+            // В случае исключения происходит редирект на текущую страницу
             if (paymentId.equals("new")) {
                 response.sendRedirect("edit?action=create");
                 return;
@@ -71,6 +77,7 @@ public class EditServlet extends HttpServlet {
                 return;
             }
         }
+        // Если всё введено правильно, то заносится/обновляется запись траты, и происходит редирект на основную таблицу
         response.sendRedirect("../spending");
     }
 }

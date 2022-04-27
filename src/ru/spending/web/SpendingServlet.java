@@ -8,7 +8,6 @@ import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
 import ru.spending.util.UtilsClass;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+// Вывод списка трат.
+// Можно добавить записи в двух предусмотренных для этого строках или изменить период вывода трат пользователя
 public class SpendingServlet extends HttpServlet {
 
     private final static SqlStorage storage = Config.getINSTANCE().getSqlStorage();
@@ -40,16 +41,21 @@ public class SpendingServlet extends HttpServlet {
                 view = "";
             }
             switch (view) {
+                // Выбор типа отображения трат
                 case "toCurrentDate":
+                    // Все траты пользователя до текущей даты
                     allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), DateUtil.NOW.toLocalDate());
                     break;
                 case "allTime":
+                    // Все траты пользователя за всё время
                     allSorted = storage.getAllSortedByUser(user.getUuid(), DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
                     break;
                 case "allUsersPayments":
+                    // Траты всех пользователей за всё время
                     allSorted = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
                     break;
                 default:
+                    // Траты пользователя за период (месяц)
                     allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
                     break;
             }
@@ -87,6 +93,7 @@ public class SpendingServlet extends HttpServlet {
 
         switch (postType) {
             case "list":
+                // Добавление трат в БД, которые записаны в ячейках на странице
                 for (PaymentType pt : PaymentType.values()) {
                     int counter = 0;
                     for (String str : request.getParameterValues(pt.name())) {
@@ -99,9 +106,11 @@ public class SpendingServlet extends HttpServlet {
                             try {
                                 Payment p;
                                 if ("on".equals(request.getParameter("at_this_date_checkbox"))) {
+                                    // Проверка чекбокса добавления трат на указанную дату
                                     LocalDate localDate = LocalDate.parse(request.getParameter("chosen_date"));
                                     p = new Payment(pt, Integer.parseInt(str), description, localDate);
                                 } else {
+                                    // Иначе трата записывается на текущую дату
                                     p = new Payment(pt, Integer.parseInt(str), description);
                                 }
                                 storage.save(p);
@@ -114,6 +123,7 @@ public class SpendingServlet extends HttpServlet {
                 }
                 break;
             case "start_date_change":
+                // Смена начальной даты периода отображения трат
                 String userID = request.getParameter("uuid");
                 String  userEmail = request.getParameter("email");
                 int startDay = Integer.parseInt(request.getParameter("start_day"));

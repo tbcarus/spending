@@ -6,7 +6,6 @@ import ru.spending.model.User;
 import ru.spending.model.Users;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+// Сервлет для вывода трат определённого типа.
+// Выводится полная информация о тратах
+// Здесь есть возможность удалить трату
 public class typedListServlet extends HttpServlet {
     private final static SqlStorage storage = Config.getINSTANCE().getSqlStorage();
 

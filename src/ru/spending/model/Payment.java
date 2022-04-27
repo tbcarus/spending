@@ -1,18 +1,18 @@
 package ru.spending.model;
 
 import ru.spending.util.DateUtil;
-
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+// Класс траты
 public class Payment {
-    private String id;
-    private PaymentType type;
-    private int prise;
-    private String description;
-    private LocalDate date;
-    private String userID;
+    private String id; // ID траты в базе
+    private PaymentType type; // Тип траты
+    private int prise; // Сумма траты
+    private String description; // Описание траты
+    private LocalDate date; // Дата совершения траты. Устанавливается автоматически или выбирается вручную
+    private String userID; // Владелец траты
 
     public Payment() {
 

@@ -7,7 +7,6 @@ import ru.spending.model.User;
 import ru.spending.sql.ConnectionFactory;
 import ru.spending.sql.SqlHelper;
 import ru.spending.util.DateUtil;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ public class SqlStorage implements Storage {
 
             return null;
         });
-
     }
 
     @Override
@@ -192,7 +190,7 @@ public class SqlStorage implements Storage {
         });
     }
 
-    //Восстановление экземпляра класса Payment по данным из БД
+    // Восстановление экземпляра класса Payment по данным из БД
     private Payment restorePayment(ResultSet rs) throws SQLException {
         String paymentID = rs.getString("id").trim();
         PaymentType paymentType = PaymentType.valueOf(rs.getString("type"));
@@ -203,6 +201,7 @@ public class SqlStorage implements Storage {
         return new Payment(paymentID, paymentType, prise, description, date, userID);
     }
 
+    // Создание листа трат по данным из БД
     private List<Payment> getPaymentList(ResultSet rs) throws SQLException {
         List<Payment> list = new ArrayList<>();
         while (rs.next()) {
@@ -211,6 +210,7 @@ public class SqlStorage implements Storage {
         return list;
     }
 
+    // Создание мапы листов трат по данным из БД
     private Map<PaymentType, List<Payment>> getPaymentMap(ResultSet rs) throws SQLException {
         Map<PaymentType, List<Payment>> map = new HashMap<>();
         for (PaymentType pt : PaymentType.values()) {
