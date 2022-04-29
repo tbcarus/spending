@@ -9,6 +9,10 @@ import java.util.Map;
 // Утильный класс
 public class UtilsClass {
 
+    public static int toInt (String s) {
+        return (int) Double.parseDouble(s.replace(',', '.'));
+    }
+
     // Максимальный размер листа в мапе с листами
     public static int maxSize(Map<PaymentType, List<Payment>> map) {
         int max = 0;

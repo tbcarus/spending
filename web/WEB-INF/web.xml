@@ -33,7 +33,7 @@
 
     <servlet>
         <servlet-name>typedListServlet</servlet-name>
-        <servlet-class>ru.spending.web.typedListServlet</servlet-class>
+        <servlet-class>ru.spending.web.TypedListServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>typedListServlet</servlet-name>

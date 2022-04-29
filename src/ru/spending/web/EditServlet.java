@@ -4,6 +4,8 @@ import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
+import ru.spending.util.UtilsClass;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,7 +56,7 @@ public class EditServlet extends HttpServlet {
             // Если тип траты не заполнен, то произойдёт исключение, обработанное в catch
             PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
             // Если сумма траты не число, то произойдёт исключение, обработанное в catch
-            int prise = Integer.parseInt(request.getParameter("prise"));
+            int prise = UtilsClass.toInt(request.getParameter("prise"));
             if (prise == 0) {
                 // Если трата нулевая, то это считается ошибкой
                 throw new IllegalArgumentException();

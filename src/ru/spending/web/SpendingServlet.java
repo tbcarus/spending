@@ -108,10 +108,10 @@ public class SpendingServlet extends HttpServlet {
                                 if ("on".equals(request.getParameter("at_this_date_checkbox"))) {
                                     // Проверка чекбокса добавления трат на указанную дату
                                     LocalDate localDate = LocalDate.parse(request.getParameter("chosen_date"));
-                                    p = new Payment(pt, Integer.parseInt(str), description, localDate);
+                                    p = new Payment(pt, UtilsClass.toInt(str), description, localDate);
                                 } else {
                                     // Иначе трата записывается на текущую дату
-                                    p = new Payment(pt, Integer.parseInt(str), description);
+                                    p = new Payment(pt, UtilsClass.toInt(str), description);
                                 }
                                 storage.save(p);
                             } catch (NumberFormatException exc) {

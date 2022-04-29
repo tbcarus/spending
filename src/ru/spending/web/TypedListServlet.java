@@ -16,7 +16,7 @@ import java.util.List;
 // Сервлет для вывода трат определённого типа.
 // Выводится полная информация о тратах
 // Здесь есть возможность удалить трату
-public class typedListServlet extends HttpServlet {
+public class TypedListServlet extends HttpServlet {
     private final static SqlStorage storage = Config.getINSTANCE().getSqlStorage();
 
     @Override
