@@ -1,3 +1,20 @@
+create table users
+(
+    id char(36) not null
+        constraint users_pk
+            primary key,
+    name text default 'Имя не задано'::text,
+    email text not null,
+    password text not null,
+    start_period_date timestamp default now() not null
+);
+
+create unique index users_email_uindex
+    on users (email);
+
+create unique index users_id_uindex
+    on users (id);
+
 create table costs
 (
     id char(36) not null
@@ -15,23 +32,6 @@ create table costs
 
 create unique index costs_id_uindex
     on costs (id);
-
-create table users
-(
-    id char(36) not null
-        constraint users_pk
-            primary key,
-    name text default 'Имя не задано'::text,
-    email text not null,
-    password text not null,
-    start_period_date timestamp default now() not null
-);
-
-create unique index users_email_uindex
-    on users (email);
-
-create unique index users_id_uindex
-    on users (id);
 
 
 
