@@ -1,5 +1,5 @@
 DELETE FROM costs;
-INSERT INTO costs(type, prise, description, date, user_id)
+INSERT INTO costs(type, price, description, date, user_id)
 VALUES ('DINNER', 250, '', '2022-02-01', '1'),
        ('CAR', 1800, 'Антикор', '2022-01-25', '1'),
        ('GAS', 3000, '', '2022-01-30', '1'),

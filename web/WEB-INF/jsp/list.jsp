@@ -140,7 +140,7 @@
                                     <c:if test="${i < map.get(pt).size()}">
                                         <input type="button" onclick="window.location.href =
                                                 'spending/edit?id=${payment_record.id}&action=edit'"
-                                               value="${payment_record.prise}"
+                                               value="${payment_record.price}"
                                                class="w3-button w3-amber w3-hover-light-green w3-round-large"/>
                                     </c:if>
                                 </td>

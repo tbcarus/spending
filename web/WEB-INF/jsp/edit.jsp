@@ -53,7 +53,7 @@
                             Сумма:
                     </td>
                     <td>
-                        <input type="text" name="prise" value="${payment.prise}"
+                        <input type="text" name="price" value="${payment.price}"
                                class="w3-input w3-border w3-round-large" style="width: 70px">
                     </td>
                 </tr>

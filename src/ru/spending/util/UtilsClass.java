@@ -28,7 +28,7 @@ public class UtilsClass {
     public static int getSumByType(List<Payment> list) {
         int sum = 0;
         for (Payment p : list) {
-            sum += p.getPrise();
+            sum += p.getPrice();
         }
         return sum;
     }

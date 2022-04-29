@@ -39,7 +39,7 @@ public class TypedListServlet extends HttpServlet {
         List<Payment> list = storage.getAllByType(pt, user.getUuid(), user.getStartPeriodDate(), user.getEndPeriodDate());
         int sum = 0;
         for (Payment p : list) {
-            sum += p.getPrise();
+            sum += p.getPrice();
         }
         request.setAttribute("user", user);
         request.setAttribute("list", list);

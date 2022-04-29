@@ -36,10 +36,9 @@
             <c:forEach var="payment" items="${list}">
                 <tr>
                     <td style="vertical-align: middle">
-<%--                            ${payment.prise}--%>
                         <input type="button" onclick="window.location.href =
                                 'edit?id=${payment.id}&action=edit'"
-                               value="${payment.prise}"
+                               value="${payment.price}"
                                class="w3-button w3-amber w3-hover-light-green w3-round-large"/>
                     </td>
                     <td style="vertical-align: middle">${payment.description}</td>

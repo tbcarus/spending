@@ -35,11 +35,11 @@ public class SqlStorage implements Storage {
 
     @Override
     public void save(Payment p) {
-        sqlHelper.execute("INSERT into costs (id, type, prise, description, date, user_id) " +
+        sqlHelper.execute("INSERT into costs (id, type, price, description, date, user_id) " +
                 "values (?, ?, ?, ?, ?, ?)", ps -> {
             ps.setString(1, p.getId());
             ps.setString(2, p.getType().name());
-            ps.setInt(3, p.getPrise());
+            ps.setInt(3, p.getPrice());
             ps.setString(4, p.getDescription() == null ? "" : p.getDescription());
             ps.setTimestamp(5, Timestamp.valueOf(p.getDate().atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setString(6, p.getUserID() == null ? "1" : p.getUserID());
@@ -95,9 +95,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Payment p) {
-        sqlHelper.execute("UPDATE costs SET type=?, prise=?, description=?, date=?, user_id=? WHERE id=?", ps -> {
+        sqlHelper.execute("UPDATE costs SET type=?, price=?, description=?, date=?, user_id=? WHERE id=?", ps -> {
             ps.setString(1, p.getType().name());
-            ps.setInt(2, p.getPrise());
+            ps.setInt(2, p.getPrice());
             ps.setString(3, p.getDescription());
             ps.setTimestamp(4, Timestamp.valueOf(p.getDate().atStartOfDay().format(DateUtil.DTFORMATTER)));
             ps.setString(5, p.getUserID());
@@ -181,7 +181,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public int getSumType(PaymentType paymentType, String userId) {
-        return sqlHelper.execute("SELECT SUM(prise) FROM costs WHERE user_id = ? AND type = ?", ps -> {
+        return sqlHelper.execute("SELECT SUM(price) FROM costs WHERE user_id = ? AND type = ?", ps -> {
             ps.setString(1, userId);
             ps.setString(2, paymentType.name());
             ResultSet rs = ps.executeQuery();
@@ -194,11 +194,11 @@ public class SqlStorage implements Storage {
     private Payment restorePayment(ResultSet rs) throws SQLException {
         String paymentID = rs.getString("id").trim();
         PaymentType paymentType = PaymentType.valueOf(rs.getString("type"));
-        int prise = rs.getInt("prise");
+        int price = rs.getInt("price");
         String description = rs.getString("description");
         LocalDate date = LocalDate.parse(rs.getString("date").split(" ")[0]);
         String userID = rs.getString("user_id").trim();
-        return new Payment(paymentID, paymentType, prise, description, date, userID);
+        return new Payment(paymentID, paymentType, price, description, date, userID);
     }
 
     // Создание листа трат по данным из БД

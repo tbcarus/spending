@@ -137,7 +137,7 @@ public class ToXls {
             for (PaymentType pt : PaymentType.values()) {
                 if (allSorted.get(pt).size() > i - deltaRow) {
                     XSSFCell cell = row.createCell(count);
-                    cell.setCellValue(allSorted.get(pt).get(i - deltaRow).getPrise());
+                    cell.setCellValue(allSorted.get(pt).get(i - deltaRow).getPrice());
                 }
                 if (count == 1) { // Особенности первоначального файла
                     count++;

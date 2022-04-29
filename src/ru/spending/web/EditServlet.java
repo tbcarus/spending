@@ -56,7 +56,7 @@ public class EditServlet extends HttpServlet {
             // Если тип траты не заполнен, то произойдёт исключение, обработанное в catch
             PaymentType paymentType = PaymentType.valueOf(request.getParameter("payment_type"));
             // Если сумма траты не число, то произойдёт исключение, обработанное в catch
-            int prise = UtilsClass.toInt(request.getParameter("prise"));
+            int prise = UtilsClass.toInt(request.getParameter("price"));
             if (prise == 0) {
                 // Если трата нулевая, то это считается ошибкой
                 throw new IllegalArgumentException();

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Payment {
     private String id; // ID траты в базе
     private PaymentType type; // Тип траты
-    private int prise; // Сумма траты
+    private int price; // Сумма траты
     private String description; // Описание траты
     private LocalDate date; // Дата совершения траты. Устанавливается автоматически или выбирается вручную
     private String userID; // Владелец траты
@@ -27,26 +27,26 @@ public class Payment {
         this.date = date;
     }
 
-    public Payment(PaymentType type, int prise) {
-        this(type, prise, "");
+    public Payment(PaymentType type, int price) {
+        this(type, price, "");
     }
 
-    public Payment(PaymentType type, int prise, String description) {
-        this(type, prise, description, LocalDate.now(), "1");
+    public Payment(PaymentType type, int price, String description) {
+        this(type, price, description, LocalDate.now(), "1");
     }
 
-    public Payment(PaymentType type, int prise, String description, LocalDate localDate) {
-        this(type, prise, description, localDate, "1");
+    public Payment(PaymentType type, int price, String description, LocalDate localDate) {
+        this(type, price, description, localDate, "1");
     }
 
-    public Payment(PaymentType type, int prise, String description, LocalDate date, String userID) {
-        this(UUID.randomUUID().toString(), type, prise, description, date, userID);
+    public Payment(PaymentType type, int price, String description, LocalDate date, String userID) {
+        this(UUID.randomUUID().toString(), type, price, description, date, userID);
     }
 
-    public Payment(String id, PaymentType type, int prise, String description, LocalDate date, String userID) {
+    public Payment(String id, PaymentType type, int price, String description, LocalDate date, String userID) {
         this.id = id;
         this.type = type;
-        this.prise = prise;
+        this.price = price;
         this.description = description;
         this.date = date;
         this.userID = userID;
@@ -60,8 +60,8 @@ public class Payment {
         return type;
     }
 
-    public int getPrise() {
-        return prise;
+    public int getPrice() {
+        return price;
     }
 
     public String getDescription() {
@@ -78,7 +78,7 @@ public class Payment {
 
     @Override
     public String toString() {
-        return id + " " + type.getTitle() + " " + prise + " " + description + " " + DateUtil.FORMATTER.format(date) + " " + userID;
+        return id + " " + type.getTitle() + " " + price + " " + description + " " + DateUtil.FORMATTER.format(date) + " " + userID;
     }
 
     @Override
@@ -86,11 +86,11 @@ public class Payment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Payment payment = (Payment) o;
-        return prise == payment.prise && id.equals(payment.id) && type == payment.type && description.equals(payment.description) && date.equals(payment.date) && userID.equals(payment.userID);
+        return price == payment.price && id.equals(payment.id) && type == payment.type && description.equals(payment.description) && date.equals(payment.date) && userID.equals(payment.userID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, prise, description, date, userID);
+        return Objects.hash(id, type, price, description, date, userID);
     }
 }
