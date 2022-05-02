@@ -4,6 +4,8 @@ import ru.spending.model.Payment;
 import ru.spending.model.PaymentType;
 import ru.spending.storage.SqlStorage;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Properties;
@@ -13,7 +15,12 @@ public class Config {
     private static final Config INSTANCE = new Config();
     private final SqlStorage sqlStorage;
     private final String homeDir = "C:\\projects\\spending";
-    File PROPS = new File(homeDir, "config\\spending.properties");
+
+//    Для локального запуска через файл properties
+//    File PROPS = new File(homeDir, "config\\spending.properties");
+//    Для хероку через файл properties
+//    String  PROPS = "/spending.properties";
+
     File POPULATE = new File(homeDir, "config\\populate.sql");
 
     public static Config getINSTANCE() {
@@ -21,15 +28,29 @@ public class Config {
     }
 
     private Config() {
-        try (InputStream is = new FileInputStream(PROPS)) {
-            Properties prop = new Properties();
-            prop.load(is);
-            String url = prop.getProperty("db.url");
-            String user = prop.getProperty("db.user");
-            String password = prop.getProperty("db.password");
-            sqlStorage = new SqlStorage(url, user, password);
-        } catch (IOException e) {
-            throw new IllegalStateException("Invalid config file" + PROPS);
+        //    Для локального запуска через файл properties
+//        try (InputStream is = new FileInputStream(PROPS)) {
+        //    Для хероку через файл properties
+//        try (InputStream is = Config.class.getResourceAsStream(PROPS)) {
+//            Properties prop = new Properties();
+//            prop.load(is);
+//            String url = prop.getProperty("db.url");
+//            String user = prop.getProperty("db.user");
+//            String password = prop.getProperty("db.password");
+//            sqlStorage = new SqlStorage(url, user, password);
+//        } catch (IOException e) {
+//            throw new IllegalStateException("Invalid config file" + PROPS);
+//        }
+
+        // Для Хероку и локального запуска
+        try {
+            URI dbUri = new URI(System.getenv("DATABASE_URL")); // Для локального запуска задать переменную окружения из хероку
+            String username = dbUri.getUserInfo().split(":")[0];
+            String password = dbUri.getUserInfo().split(":")[1];
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
+            sqlStorage = new SqlStorage(dbUrl, username, password);
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("Invalid credentials");
         }
     }
 
