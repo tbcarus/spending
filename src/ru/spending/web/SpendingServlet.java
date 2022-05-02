@@ -8,6 +8,7 @@ import ru.spending.storage.SqlStorage;
 import ru.spending.util.Config;
 import ru.spending.util.DateUtil;
 import ru.spending.util.UtilsClass;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -104,15 +105,8 @@ public class SpendingServlet extends HttpServlet {
                                 description = request.getParameterValues(pt.name() + "description")[counter];
                             }
                             try {
-                                Payment p;
-                                if ("on".equals(request.getParameter("at_this_date_checkbox"))) {
-                                    // Проверка чекбокса добавления трат на указанную дату
-                                    LocalDate localDate = LocalDate.parse(request.getParameter("chosen_date"));
-                                    p = new Payment(pt, UtilsClass.toInt(str), description, localDate);
-                                } else {
-                                    // Иначе трата записывается на текущую дату
-                                    p = new Payment(pt, UtilsClass.toInt(str), description);
-                                }
+                                LocalDate localDate = LocalDate.parse(request.getParameter("chosen_date"));
+                                Payment p = new Payment(pt, UtilsClass.toInt(str), description, localDate);
                                 storage.save(p);
                             } catch (NumberFormatException exc) {
                                 exc.printStackTrace();
@@ -125,7 +119,7 @@ public class SpendingServlet extends HttpServlet {
             case "start_date_change":
                 // Смена начальной даты периода отображения трат
                 String userID = request.getParameter("uuid");
-                String  userEmail = request.getParameter("email");
+                String userEmail = request.getParameter("email");
                 int startDay = Integer.parseInt(request.getParameter("start_day"));
                 int startMonth = Integer.parseInt(request.getParameter("start_month"));
                 int startYear = Integer.parseInt(request.getParameter("start_year"));

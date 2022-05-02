@@ -56,7 +56,6 @@
                             <div class="w3-center">
                                 <input type="date" name="chosen_date"
                                        value="${DateUtil.NOW.format(DateUtil.DTFORMATTER_DATE_ONLY)}">
-                                <input type="checkbox" name="at_this_date_checkbox"> Добавить записи на указанную дату
                             </div>
                         </td>
                         <td colspan="3" class="">
