@@ -19,7 +19,7 @@
 </head>
 <body class="w3-metro-light-blue">
 <section>
-<div <%--class="w3-display-topmiddle"--%>>
+    <div <%--class="w3-display-topmiddle"--%>>
         <form method="post" action="spending" enctype="application/x-www-form-urlencoded" class="w3-container">
             <input type="hidden" name="post_type" value="list">
             <input type="hidden" name="uuid" value="${user.uuid}">
@@ -42,23 +42,23 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="3" style="vertical-align: middle">
+                        <td colspan="2" style="vertical-align: middle">
                             <div class="w3-left">
-                                <button type="submit" class="w3-button w3-light-green w3-hover-amber w3-round-large">
-                                    Сохранить
-                                </button>
                                 <input type="button" onclick="window.location.href = 'spending'"
                                        value="Обновить"
-                                       class="w3-button w3-light-green w3-hover-amber w3-round-large"/>
+                                       class="w3-button w3-light-green w3-hover-amber w3-round-large"
+                                       />
                             </div>
                         </td>
-                        <td colspan="8" style="vertical-align: middle">
+                        <td colspan="10" style="vertical-align: middle">
                             <div class="w3-center">
-                                <input type="date" name="chosen_date"
-                                       value="${DateUtil.NOW.format(DateUtil.DTFORMATTER_DATE_ONLY)}">
+                                <button type="submit"
+                                        class="w3-button w3-block w3-light-green w3-hover-amber w3-round-large">
+                                    Сохранить
+                                </button>
                             </div>
                         </td>
-                        <td colspan="3" class="">
+                        <td colspan="2" class="">
                             <div class="w3-right">
                                 <input type="button" onclick="window.location.href = 'spending/edit?action=create'"
                                        value="Добавить новую запись"
@@ -73,10 +73,20 @@
 
                     <%--            Вывод суммы всех затрат --%>
                     <tr class="w3-text-orange w3-blue-gray">
-                        <td colspan="14">
+                        <td colspan="2" style="vertical-align: middle">
                             <div class="w3-left">
                                 <b>Всего: ${sumAll}</b>
                             </div>
+                        </td>
+                        <td colspan="10" style="vertical-align: middle">
+                            <div class="w3-center">
+                                <b>Внести записи на дату:</b>
+                                <input type="date" name="chosen_date"
+                                       value="${DateUtil.NOW.format(DateUtil.DTFORMATTER_DATE_ONLY)}">
+                            </div>
+                        </td>
+                        <td colspan="2">
+
                         </td>
                     </tr>
 
