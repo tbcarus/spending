@@ -201,9 +201,9 @@
                 </select>
                 <select name="start_month">
                     <option value="${user.startPeriodDate.month.value}" selected
-                            hidden>${user.startPeriodDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}</option>
+                            hidden>${user.startPeriodDate.month.getDisplayName(TextStyle.FULL, Locale.forLanguageTag("ru"))}</option>
                     <c:forEach var="i" begin="1" end="12">
-                        <option value="${i}">${Month.of(i).getDisplayName(TextStyle.FULL, Locale.getDefault())}</option>
+                        <option value="${i}">${Month.of(i).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("ru"))}</option>
                     </c:forEach>
                 </select>
                 <select name="start_year">

@@ -77,7 +77,7 @@ public class SettingsServlet extends HttpServlet {
                 LocalDate periodStart = LocalDate.of(periodYear, periodMonth, periodDay);
                 Map<PaymentType, List<Payment>> allSorted = storage.getAllSortedByUser(user.getUuid(), periodStart, periodStart.plusMonths(1));
                 String bookName = periodStart.getDayOfMonth() + " " +
-                        periodStart.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " +
+                        periodStart.getMonth().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("ru")) + " " +
                         periodStart.format(DateTimeFormatter.ofPattern("yy"));// Форматирование структуры названия книги
 
                 XSSFWorkbook book = ToXls.write(allSorted, bookName);
