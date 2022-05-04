@@ -2,10 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="java.time.Month" %>
 <%@ page import="java.time.Year" %>
-<%@ page import="java.io.File" %>
 <%@ page import="java.time.format.TextStyle" %>
 <%@ page import="java.util.Locale" %>
-<%@ page import="java.util.Locale.Category" %>
 
 <html>
 <head>
@@ -91,7 +89,6 @@
         <input type="hidden" name="uuid" value="${user.uuid}">
         <input type="hidden" name="email" value="${user.email}">
         <input type="hidden" name="post_type" value="export">
-        <jsp:useBean id="isRightDir" type="java.lang.Boolean" scope="request"/>
         <br>
         <table class="w3-table w3-centered w3-card-4 w3-small">
             <tr class="w3-border">
@@ -99,32 +96,6 @@
                     <b>Экспорт файла</b>
                 </td>
             </tr>
-            <c:if test="${isRightDir}">
-                <tr>
-                    <td>
-                        <jsp:useBean id="dirOut" type="java.lang.String" scope="request"/>
-                        Файл будет сохранён в папке:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                            ${dirOut}
-                        <input hidden type="text" name="dir_path" value="${dirOut}">
-                    </td>
-                </tr>
-            </c:if>
-            <c:if test="${!isRightDir}">
-                <tr>
-                    <td>
-                        Адрес папки для экспорта фала:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="text" name="dir_path" class="w3-input w3-block w3-border w3-round-large">
-                    </td>
-                </tr>
-            </c:if>
             <tr>
                 <td>
                     ${user.startPeriodDate.dayOfMonth}
@@ -154,8 +125,6 @@
             </tr>
         </table>
     </form>
-
 </div>
-
 </body>
 </html>
