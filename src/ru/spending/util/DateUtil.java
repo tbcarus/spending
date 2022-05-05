@@ -28,4 +28,8 @@ public class DateUtil {
             return LocalDate.of(NOW.getYear(), NOW.getMonthValue(), day).minusMonths(1);
         }
     }
+
+    public static LocalDate getLocalDateNow() {
+        return LocalDate.now();
+    }
 }

@@ -18,6 +18,8 @@
     <title>Список затрат</title>
 </head>
 <body class="w3-metro-light-blue">
+<jsp:useBean id="user" scope="request" type="ru.spending.model.User"/>
+<c:set var="user" value="${user}"/>
 <section>
     <div <%--class="w3-display-topmiddle"--%>>
         <form method="post" action="spending" enctype="application/x-www-form-urlencoded" class="w3-container">
@@ -28,14 +30,26 @@
                 <table class="w3-table w3-striped w3-bordered w3-centered w3-card-4 w3-small"
                        style="width: 50%; height: 30%; margin: 0 auto">
                     <tr class="w3-deep-orange">
-                        <td colspan="3">
-
-                        </td>
-                        <td colspan="9">
-
-                        </td>
                         <td colspan="2">
-                            <c:set var="user" value="${user}"/>
+
+                        </td>
+                        <c:choose>
+                            <c:when test="${user.startPeriodDate.isBefore(DateUtil.getLocalDateNow()) &&
+                                user.startPeriodDate.plusMonths(1).isAfter(DateUtil.getLocalDateNow())}">
+                                <td colspan="10" class="w3-deep-orange">
+                                    Период:
+                                        ${user.startPeriodDate.format(DateUtil.DTFORMATTER_DATE_ONLY_RU)} -
+                                        ${user.getEndPeriodDate().format(DateUtil.DTFORMATTER_DATE_ONLY_RU)}
+                                </td>
+                            </c:when>
+                            <c:otherwise>
+                                <td colspan="10" class="w3-purple">
+                                    Выбранная начальная дата вне текущего месяца
+                                </td>
+                            </c:otherwise>
+                        </c:choose>
+
+                        <td colspan="2">
                             <div class="w3-right">
                                 <b><a href="spending/settings?uuid=${user.uuid}">${user.name}</a></b>
                             </div>
@@ -47,7 +61,7 @@
                                 <input type="button" onclick="window.location.href = 'spending'"
                                        value="Обновить"
                                        class="w3-button w3-light-green w3-hover-amber w3-round-large"
-                                       />
+                                />
                             </div>
                         </td>
                         <td colspan="10" style="vertical-align: middle">

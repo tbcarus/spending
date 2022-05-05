@@ -27,12 +27,10 @@ create table costs
     user_id char(36)
         constraint costs_user_id_fk
             references users
-            on delete cascade
+            on delete cascade,
+    date_of_creation timestamp default now()
 );
 
 create unique index costs_id_uindex
     on costs (id);
-
-
-
 

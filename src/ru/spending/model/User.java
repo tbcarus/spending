@@ -49,7 +49,7 @@ public class User {
 
     // Дата окончания периода учёта трат. Период в программе принят равным 1 месяц с начала периода
     public LocalDate getEndPeriodDate() {
-        return startPeriodDate.plusMonths(1);
+        return startPeriodDate.plusMonths(1).minusDays(1);
     }
 
     public void setName(String name) {
