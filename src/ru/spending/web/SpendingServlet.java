@@ -45,15 +45,15 @@ public class SpendingServlet extends HttpServlet {
                 // Выбор типа отображения трат
                 case "toCurrentDate":
                     // Все траты пользователя до текущей даты
-                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), DateUtil.NOW.toLocalDate());
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), user.getStartPeriodDate(), DateUtil.getLocalDateTimeNow().toLocalDate());
                     break;
                 case "allTime":
                     // Все траты пользователя за всё время
-                    allSorted = storage.getAllSortedByUser(user.getUuid(), DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    allSorted = storage.getAllSortedByUser(user.getUuid(), DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.getLocalDateTimeNow().toLocalDate());
                     break;
                 case "allUsersPayments":
                     // Траты всех пользователей за всё время
-                    allSorted = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+                    allSorted = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.getLocalDateTimeNow().toLocalDate());
                     break;
                 default:
                     // Траты пользователя за период (месяц)

@@ -91,7 +91,7 @@ public class SqlStorageTest {
 
     @Test
     public void getAllSorted() {
-        Map<PaymentType, List<Payment>> map = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+        Map<PaymentType, List<Payment>> map = storage.getAllSorted(DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.getLocalDateTimeNow().toLocalDate());
         int size = 0;
         for (PaymentType pt : map.keySet()) {
             size += map.get(pt).size();
@@ -101,7 +101,7 @@ public class SqlStorageTest {
 
     @Test
     public void getAllByType() {
-        List<Payment> list = storage.getAllByType(PaymentType.GAS, "1", DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.NOW.toLocalDate());
+        List<Payment> list = storage.getAllByType(PaymentType.GAS, "1", DateUtil.ALL_TIME_START.toLocalDate(), DateUtil.getLocalDateTimeNow().toLocalDate());
         assertEquals(3, list.size());
     }
 

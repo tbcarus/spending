@@ -34,7 +34,7 @@
 
                         </td>
                         <c:choose>
-                            <c:when test="${user.startPeriodDate.isBefore(DateUtil.getLocalDateNow()) &&
+                            <c:when test="${user.startPeriodDate.minusDays(1).isBefore(DateUtil.getLocalDateNow()) &&
                                 user.startPeriodDate.plusMonths(1).isAfter(DateUtil.getLocalDateNow())}">
                                 <td colspan="10" class="w3-deep-orange">
                                     Период:
@@ -96,7 +96,7 @@
                             <div class="w3-center">
                                 <b>Внести записи на дату:</b>
                                 <input type="date" name="chosen_date"
-                                       value="${DateUtil.NOW.format(DateUtil.DTFORMATTER_DATE_ONLY)}">
+                                       value="${DateUtil.getLocalDateTimeNow().format(DateUtil.DTFORMATTER_DATE_ONLY)}">
                             </div>
                         </td>
                         <td colspan="2">
@@ -230,6 +230,7 @@
                     дату
                 </button>
             </form>
+            =${DateUtil.getLocalDateTimeNow().format(DateUtil.DTFORMATTER_RU)}= by tbcarus
         </div>
     </div>
 </section>
