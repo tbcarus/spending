@@ -1,0 +1,8 @@
+meta:
+  environment: jvm
+  toolchain:
+    name: maven
+    version: 15.0.1
+
+run:
+  jarName: bag-end.jar
